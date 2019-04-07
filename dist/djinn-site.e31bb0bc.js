@@ -25771,7 +25771,9 @@ var style = {
   textContainer: {
     display: 'flex',
     textAlign: 'center',
-    width: '90vw'
+    width: '90vw',
+    color: '#fff',
+    flexDirection: 'column'
   }
 };
 exports.style = style;
@@ -42617,7 +42619,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64286" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64213" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

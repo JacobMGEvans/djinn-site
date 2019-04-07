@@ -12,6 +12,8 @@ export const style = {
   textContainer: {
     display: 'flex',
     textAlign: 'center',
-    width: '90vw'
+    width: '90vw',
+    color: '#fff',
+    flexDirection: 'column'
   }
 };
