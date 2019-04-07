@@ -1,139 +1,146 @@
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { NavLink } from 'react-router-dom';
-// @material-ui/core components
-import withStyles from '@material-ui/core/styles/withStyles';
+import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
-// core components
 
-const SideBar = ({ ...props }) => {
-  // verifies if routeName is the one active (in browser input)
-  function activeRoute(routeName) {
-    return props.location.pathname.indexOf(routeName) > -1 ? true : false;
-  }
-  const { classes, color, logo, image, logoText, routes } = props;
-  var links = (
-    <List className={classes.list}>
-      {routes.map((prop, key) => {
-        var activePro = ' ';
-        var listItemClasses;
-        if (prop.path === '/upgrade-to-pro') {
-          activePro = classes.activePro + ' ';
-          listItemClasses = classNames({
-            [' ' + classes[color]]: true
-          });
-        } else {
-          listItemClasses = classNames({
-            [' ' + classes[color]]: activeRoute(prop.layout + prop.path)
-          });
-        }
-        const whiteFontClasses = classNames({
-          [' ' + classes.whiteFont]: activeRoute(prop.layout + prop.path)
-        });
-        return (
-          <NavLink
-            to={prop.layout + prop.path}
-            className={activePro + classes.item}
-            activeClassName="active"
-            key={key}>
-            <ListItem button className={classes.itemLink + listItemClasses}>
-              {typeof prop.icon === 'string' ? (
-                <Icon
-                  className={classNames(classes.itemIcon, whiteFontClasses, {
-                    [classes.itemIconRTL]: props.rtlActive
-                  })}>
-                  {prop.icon}
-                </Icon>
-              ) : (
-                <prop.icon
-                  className={classNames(classes.itemIcon, whiteFontClasses, {
-                    [classes.itemIconRTL]: props.rtlActive
-                  })}
-                />
-              )}
-              <ListItemText
-                primary={props.rtlActive ? prop.rtlName : prop.name}
-                className={classNames(classes.itemText, whiteFontClasses, {
-                  [classes.itemTextRTL]: props.rtlActive
-                })}
-                disableTypography={true}
-              />
-            </ListItem>
-          </NavLink>
-        );
-      })}
-    </List>
-  );
-  var brand = (
-    <div className={classes.logo}>
-      <a
-        href="https://www.creative-tim.com"
-        className={classNames(classes.logoLink, {
-          [classes.logoLinkRTL]: props.rtlActive
-        })}>
-        <div className={classes.logoImage}>
-          <img src={logo} alt="logo" className={classes.img} />
-        </div>
-        {logoText}
-      </a>
-    </div>
-  );
+import { style } from './style';
+
+const drawerWidth = 240;
+
+const styles = theme => ({
+  appBar: {
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end'
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing.unit * 3,
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    marginLeft: -drawerWidth
+  },
+  contentShift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    }),
+    marginLeft: 0
+  },
+  ...style
+});
+
+const primaryListDjinn = ['Home', 'About', 'Contact Me', 'Live Build Stream!'];
+const secondaryListDjinn = [
+  'Media',
+  'Shop',
+  'Build Log',
+  'Tools & Materials',
+  'FAQ'
+];
+
+const PersistentDrawerLeft = ({ classes }) => {
+  const [open, setOpen] = useState(false);
+
+  const handleDrawer = () => {
+    setOpen(!open);
+  };
+
   return (
-    <div>
-      <Hidden mdUp implementation="css">
-        <Drawer
-          variant="temporary"
-          anchor={props.rtlActive ? 'left' : 'right'}
-          open={props.open}
-          classes={{
-            paper: classNames(classes.drawerPaper, {
-              [classes.drawerPaperRTL]: props.rtlActive
-            })
-          }}
-          onClose={props.handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile.
-          }}>
-          {brand}
-          <div className={classes.sidebarWrapper}>
-            {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
-            {links}
-          </div>
-          {image !== undefined ? (
-            <div
-              className={classes.background}
-              style={{ backgroundImage: 'url(' + image + ')' }}
-            />
-          ) : null}
-        </Drawer>
-      </Hidden>
-      <Hidden smDown implementation="css">
-        <Drawer
-          anchor={props.rtlActive ? 'right' : 'left'}
-          variant="permanent"
-          open
-          classes={{
-            paper: classNames(classes.drawerPaper, {
-              [classes.drawerPaperRTL]: props.rtlActive
-            })
-          }}>
-          {brand}
-          <div className={classes.sidebarWrapper}>{links}</div>
-          {image !== undefined ? (
-            <div
-              className={classes.background}
-              style={{ backgroundImage: 'url(' + image + ')' }}
-            />
-          ) : null}
-        </Drawer>
-      </Hidden>
+    <div className={classes.root}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        className={classNames(classes.appBar, {
+          [classes.appBarShift]: open
+        })}
+        style={{ backgroundColor: '#222' }}>
+        <Toolbar disableGutters={!open}>
+          <IconButton
+            color="inherit"
+            aria-label="Open drawer"
+            onClick={handleDrawer}
+            className={classNames(classes.menuButton, open && classes.hide)}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" color="inherit" noWrap>
+            Fabricator Djinn
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="left"
+        open={open}
+        classes={{
+          paper: classes.drawerPaper
+        }}>
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={handleDrawer}>{<ChevronLeftIcon />}</IconButton>
+        </div>
+        <Divider />
+        <List>
+          {primaryListDjinn.map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemText primary={text} id={text} />
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {secondaryListDjinn.map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemText primary={text} id={text} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <main
+        className={classNames(classes.content, {
+          [classes.contentShift]: open
+        })}>
+        <div className={classes.drawerHeader} />
+        <Typography paragraph />
+        <Typography paragraph />
+      </main>
     </div>
   );
 };
 
-export default SideBar;
+PersistentDrawerLeft.propTypes = {
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired
+};
+
+export default withStyles(styles, { withTheme: true })(PersistentDrawerLeft);
