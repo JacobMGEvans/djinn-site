@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-
-import SideBar from './components/sidebar';
+import ReactDOM from 'react-dom';
 
 export default class App extends Component {
   render() {
-    return (
-      <div>
-        <SideBar />
-      </div>
-    );
+    return <div>HELLO</div>;
   }
 }
+
 ReactDOM.render(<App />, document.getElementById('root'));

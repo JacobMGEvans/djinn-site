@@ -1,12 +1,12 @@
 {
   "name": "djinn-site",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.html",
   "repository": "https://github.com/JacobMGEvans/djinn-site.git",
   "author": "Jacob Evans <cloud887@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js",
+    "start": "node server.js",
     "watch": "parcel index.html",
     "clean": "rm -rf dist",
     "pristine": "rm -rf .cache node_modules dist yarn.lock",
@@ -14,20 +14,25 @@
     "heroku-postbuild": "yarn build"
   },
   "dependencies": {
+    "@material-ui/core": "^3.9.3",
+    "babel-eslint": "^10.0.1",
+    "classnames": "^2.2.6",
+    "dotenv": "^7.0.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react-hooks": "^1.6.0",
+    "express": "^4.16.4",
+    "parcel-bundler": "^1.12.3",
+    "prettier": "^1.16.4",
+    "react": ">=15",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.0"
+  },
+  "devDependencies": {
     "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
-    "@babel/preset-react": "^7.0.0",
-    "@material-ui/core": "^3.9.3",
-    "babel-eslint": "^10.0.1",
-    "classnames": "^2.2.6",
-    "eslint": "^5.16.0",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-react-hooks": "^1.6.0",
-    "parcel-bundler": "^1.12.3",
-    "prettier": "^1.16.4",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "@babel/preset-react": "^7.0.0"
   }
 }
