@@ -10,8 +10,7 @@
     "watch": "parcel index.html",
     "clean": "rm -rf dist .cache",
     "pristine": "rm -rf .cache node_modules dist yarn.lock",
-    "build": "parcel build index.html --public-url ./dist",
-    "heroku-postbuild": "yarn build"
+    "build": "parcel build index.html --public-url ./"
   },
   "dependencies": {
     "@material-ui/core": "^3.0.0",
