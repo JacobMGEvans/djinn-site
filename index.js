@@ -10,9 +10,9 @@ export default class App extends Component {
       <div
         style={{
           width: '100vw',
-          height: '100vh',
-          backgroundColor: '#494949'
+          height: '100vh'
         }}>
+        {(document.body.style = 'background: #494949;')}
         <Header />
         <Home />
       </div>

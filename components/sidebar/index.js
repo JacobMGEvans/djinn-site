@@ -17,6 +17,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import { style } from './style';
 
+import djinnLogo from '../../assets/DjinnIcon.png';
+
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -57,6 +59,7 @@ const styles = theme => ({
     }),
     marginLeft: 0
   },
+
   ...style
 });
 
@@ -109,9 +112,10 @@ const PersistentDrawerLeft = ({ classes }) => {
         <div className={classes.drawerHeader}>
           <IconButton onClick={handleDrawer}>{<ChevronLeftIcon />}</IconButton>
         </div>
+        <img style={{ width: '15vw' }} src={djinnLogo} alt="Djinn Logo" />
         <Divider />
         <List>
-          {primaryListDjinn.map((text, index) => (
+          {primaryListDjinn.map(text => (
             <ListItem button key={text}>
               <ListItemText primary={text} id={text} />
             </ListItem>
@@ -119,7 +123,7 @@ const PersistentDrawerLeft = ({ classes }) => {
         </List>
         <Divider />
         <List>
-          {secondaryListDjinn.map((text, index) => (
+          {secondaryListDjinn.map(text => (
             <ListItem button key={text}>
               <ListItemText primary={text} id={text} />
             </ListItem>
@@ -131,8 +135,6 @@ const PersistentDrawerLeft = ({ classes }) => {
           [classes.contentShift]: open
         })}>
         <div className={classes.drawerHeader} />
-        <Typography paragraph />
-        <Typography paragraph />
       </main>
     </div>
   );
