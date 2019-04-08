@@ -123,7 +123,8 @@ const PersistentDrawerLeft = ({ classes }) => {
           ))}
           <a
             href="https://www.twitch.tv/fabricatordjinn"
-            style={{ position: 'relative', left: '1.5vw', top: '.9vh' }}>
+            style={{ position: 'relative', left: '1.5vw', top: '.9vh' }}
+            target="_blank">
             <ListItemText
               primary={'Live Build Stream!'}
               id={'Live Build Stream!'}
@@ -142,7 +143,8 @@ const PersistentDrawerLeft = ({ classes }) => {
           ))}
           <a
             href="https://www.etsy.com/shop/FabricatorDjinn"
-            style={{ position: 'relative', left: '1.5vw', top: '1.5vh' }}>
+            style={{ position: 'relative', left: '1.5vw', top: '1.5vh' }}
+            target="_blank">
             <ListItemText primary="Shop" id="Shop" key="Shop" />
           </a>
         </List>
