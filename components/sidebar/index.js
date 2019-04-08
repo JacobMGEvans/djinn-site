@@ -64,14 +64,8 @@ const styles = theme => ({
   ...style
 });
 
-const primaryListDjinn = ['Home', 'About', 'Contact Me', 'Live Build Stream!'];
-const secondaryListDjinn = [
-  'Media',
-  'Shop',
-  'Build Log',
-  'Tools & Materials',
-  'FAQ'
-];
+const primaryListDjinn = ['Home', 'About', 'Contact Me'];
+const secondaryListDjinn = ['Media', 'Build Log', 'Tools & Materials', 'FAQ'];
 
 const PersistentDrawerLeft = ({ classes }) => {
   const [open, setOpen] = useState(false);
@@ -121,22 +115,36 @@ const PersistentDrawerLeft = ({ classes }) => {
         <Divider />
         <List>
           {primaryListDjinn.map(text => (
-            <Link to={`/${text}`} onClick={handleDrawer}>
+            <Link to={`/${text}`} onClick={handleDrawer} key={text}>
               <ListItem button key={text} onClick={handleDrawer}>
-                <ListItemText primary={text} id={text} />
+                <ListItemText primary={text} id={text} key={text} />
               </ListItem>
             </Link>
           ))}
+          <a
+            href="https://www.twitch.tv/fabricatordjinn"
+            style={{ position: 'relative', left: '1.5vw', top: '.9vh' }}>
+            <ListItemText
+              primary={'Live Build Stream!'}
+              id={'Live Build Stream!'}
+              key={'Live Build Stream!'}
+            />
+          </a>
         </List>
-        <Divider />
+        <Divider style={{ position: 'relative', top: '1.5vh' }} />
         <List>
           {secondaryListDjinn.map(text => (
-            <Link to={`/${text}`} onClick={handleDrawer}>
+            <Link to={`/${text}`} onClick={handleDrawer} key={text}>
               <ListItem button key={text} onClick={handleDrawer}>
-                <ListItemText primary={text} id={text} />
+                <ListItemText primary={text} id={text} key={text} />
               </ListItem>
             </Link>
           ))}
+          <a
+            href="https://www.etsy.com/shop/FabricatorDjinn"
+            style={{ position: 'relative', left: '1.5vw', top: '1.5vh' }}>
+            <ListItemText primary="Shop" id="Shop" key="Shop" />
+          </a>
         </List>
       </Drawer>
     </div>

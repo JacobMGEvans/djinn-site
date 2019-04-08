@@ -43988,8 +43988,8 @@ var styles = function styles(theme) {
   }, _style.style);
 };
 
-var primaryListDjinn = ['Home', 'About', 'Contact Me', 'Live Build Stream!'];
-var secondaryListDjinn = ['Media', 'Shop', 'Build Log', 'Tools & Materials', 'FAQ'];
+var primaryListDjinn = ['Home', 'About', 'Contact Me'];
+var secondaryListDjinn = ['Media', 'Build Log', 'Tools & Materials', 'FAQ'];
 
 var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
   var classes = _ref.classes;
@@ -44044,28 +44044,59 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
   }), _react.default.createElement(_Divider.default, null), _react.default.createElement(_List.default, null, primaryListDjinn.map(function (text) {
     return _react.default.createElement(_router.Link, {
       to: "/".concat(text),
-      onClick: handleDrawer
+      onClick: handleDrawer,
+      key: text
     }, _react.default.createElement(_ListItem.default, {
       button: true,
       key: text,
       onClick: handleDrawer
     }, _react.default.createElement(_ListItemText.default, {
       primary: text,
-      id: text
+      id: text,
+      key: text
     })));
-  })), _react.default.createElement(_Divider.default, null), _react.default.createElement(_List.default, null, secondaryListDjinn.map(function (text) {
+  }), _react.default.createElement("a", {
+    href: "https://www.twitch.tv/fabricatordjinn",
+    style: {
+      position: 'relative',
+      left: '1.5vw',
+      top: '.9vh'
+    }
+  }, _react.default.createElement(_ListItemText.default, {
+    primary: 'Live Build Stream!',
+    id: 'Live Build Stream!',
+    key: 'Live Build Stream!'
+  }))), _react.default.createElement(_Divider.default, {
+    style: {
+      position: 'relative',
+      top: '1.5vh'
+    }
+  }), _react.default.createElement(_List.default, null, secondaryListDjinn.map(function (text) {
     return _react.default.createElement(_router.Link, {
       to: "/".concat(text),
-      onClick: handleDrawer
+      onClick: handleDrawer,
+      key: text
     }, _react.default.createElement(_ListItem.default, {
       button: true,
       key: text,
       onClick: handleDrawer
     }, _react.default.createElement(_ListItemText.default, {
       primary: text,
-      id: text
+      id: text,
+      key: text
     })));
-  }))));
+  }), _react.default.createElement("a", {
+    href: "https://www.etsy.com/shop/FabricatorDjinn",
+    style: {
+      position: 'relative',
+      left: '1.5vw',
+      top: '1.5vh'
+    }
+  }, _react.default.createElement(_ListItemText.default, {
+    primary: "Shop",
+    id: "Shop",
+    key: "Shop"
+  })))));
 };
 
 var _default = (0, _styles.withStyles)(styles, {
@@ -44139,7 +44170,54 @@ var About = function About() {
 
 var _default = About;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","./style":"components/about/style.js","../../assets/space-Marine-caleb.jpg":"assets/space-Marine-caleb.jpg","../../assets/axe-caleb.jpg":"assets/axe-caleb.jpg"}],"index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","./style":"components/about/style.js","../../assets/space-Marine-caleb.jpg":"assets/space-Marine-caleb.jpg","../../assets/axe-caleb.jpg":"assets/axe-caleb.jpg"}],"components/faq/style.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.styles = void 0;
+var styles = {
+  textContainer: {
+    position: 'relative',
+    color: 'white',
+    flexDirection: 'column',
+    textAlign: 'center',
+    width: '80vw',
+    top: '10vh'
+  },
+  flexContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+};
+exports.styles = styles;
+},{}],"components/faq/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _style = require("./style");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var FAQ = function FAQ() {
+  return _react.default.createElement("section", {
+    style: _style.styles.flexContainer
+  }, _react.default.createElement("main", {
+    style: _style.styles.textContainer
+  }, _react.default.createElement("h3", null, "Do you take commissions?"), _react.default.createElement("p", null, "Yes I do! If you\u2019re interested in a custom piece of armor or weapon, crafted by me, please take a journey over to the \u201CContact Me\u201D section and send me an email with a detailed description of your project, include as much information as possible, I WILL follow up with you if you give me more information then \u201Chyper electric glory sword\u201D. You can attach reference pictures or any other documents to the contact me form, and I will get them!"), _react.default.createElement("p", null, "I do not take many commissions a year, but if I can\u2019t help you out in time, I can refer you to someone who may be able to."), _react.default.createElement("p", null, "Commissions are priced on a case by case basis, but the formula is always the same. Time + Materials + Shipping."), _react.default.createElement("h3", null, "Why isn\u2019t that MacGuffin $50?"), _react.default.createElement("p", null, "Time is money, friend. There is a lot that goes into creating a custom prop, between research, planning, material acquisition, the hours tend to wrack up even before the actual plastic hits the table. When you\u2019re trying to survive off of your art, there are harsh realities to face as to the cost of survival. Bill Doran over at Punished Props says it best.")));
+};
+
+var _default = FAQ;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","./style":"components/faq/style.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44158,6 +44236,8 @@ var _home = _interopRequireDefault(require("./components/home"));
 var _sidebar = _interopRequireDefault(require("./components/sidebar"));
 
 var _about = _interopRequireDefault(require("./components/about"));
+
+var _faq = _interopRequireDefault(require("./components/faq"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -44204,6 +44284,8 @@ function (_Component) {
         path: "/Home"
       }), _react.default.createElement(_about.default, {
         path: "/About"
+      }), _react.default.createElement(_faq.default, {
+        path: "/FAQ"
       })));
     }
   }]);
@@ -44214,7 +44296,7 @@ function (_Component) {
 exports.default = App;
 
 _reactDom.default.render(_react.default.createElement(App, null), document.getElementById('root'));
-},{"react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","@reach/router":"node_modules/@reach/router/es/index.js","./components/home":"components/home/index.js","./components/sidebar":"components/sidebar/index.js","./components/about":"components/about/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","@reach/router":"node_modules/@reach/router/es/index.js","./components/home":"components/home/index.js","./components/sidebar":"components/sidebar/index.js","./components/about":"components/about/index.js","./components/faq":"components/faq/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -44242,7 +44324,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55248" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55355" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

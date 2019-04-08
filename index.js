@@ -5,6 +5,7 @@ import { Router } from '@reach/router';
 import Home from './components/home';
 import Header from './components/sidebar';
 import About from './components/about';
+import FAQ from './components/faq';
 
 export default class App extends Component {
   render() {
@@ -19,6 +20,7 @@ export default class App extends Component {
         <Router>
           <Home path="/Home" />
           <About path="/About" />
+          <FAQ path="/FAQ" />
         </Router>
       </main>
     );
