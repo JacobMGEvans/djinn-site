@@ -25748,92 +25748,63 @@ if ("development" === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":"node_modules/react-dom/cjs/react-dom.development.js"}],"node_modules/@babel/runtime/helpers/interopRequireDefault.js":[function(require,module,exports) {
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : {
-    "default": obj
-  };
-}
+},{"./cjs/react-dom.development.js":"node_modules/react-dom/cjs/react-dom.development.js"}],"node_modules/warning/browser.js":[function(require,module,exports) {
+/**
+ * Copyright 2014-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+'use strict';
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
 
-module.exports = _interopRequireDefault;
-},{}],"node_modules/@babel/runtime/helpers/extends.js":[function(require,module,exports) {
-function _extends() {
-  module.exports = _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
+var warning = function () {};
 
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
+if ("development" !== 'production') {
+  warning = function (condition, format, args) {
+    var len = arguments.length;
+    args = new Array(len > 2 ? len - 2 : 0);
+
+    for (var key = 2; key < len; key++) {
+      args[key - 2] = arguments[key];
+    }
+
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.length < 10 || /^[s\W]*$/.test(format)) {
+      throw new Error('The warning format should be able to uniquely identify this ' + 'warning. Please, use a more descriptive format than: ' + format);
+    }
+
+    if (!condition) {
+      var argIndex = 0;
+      var message = 'Warning: ' + format.replace(/%s/g, function () {
+        return args[argIndex++];
+      });
+
+      if (typeof console !== 'undefined') {
+        console.error(message);
       }
-    }
 
-    return target;
+      try {
+        // This error was thrown as a convenience so that you can use this stack
+        // to find the callsite that caused this warning to fire.
+        throw new Error(message);
+      } catch (x) {}
+    }
   };
-
-  return _extends.apply(this, arguments);
 }
 
-module.exports = _extends;
-},{}],"node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-module.exports = _defineProperty;
-},{}],"node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js":[function(require,module,exports) {
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-
-  return target;
-}
-
-module.exports = _objectWithoutPropertiesLoose;
-},{}],"node_modules/@babel/runtime/helpers/objectWithoutProperties.js":[function(require,module,exports) {
-var objectWithoutPropertiesLoose = require("./objectWithoutPropertiesLoose");
-
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = objectWithoutPropertiesLoose(source, excluded);
-  var key, i;
-
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-
-  return target;
-}
-
-module.exports = _objectWithoutProperties;
-},{"./objectWithoutPropertiesLoose":"node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"}],"node_modules/react-is/cjs/react-is.development.js":[function(require,module,exports) {
+module.exports = warning;
+},{}],"node_modules/react-is/cjs/react-is.development.js":[function(require,module,exports) {
 /** @license React v16.8.6
  * react-is.development.js
  *
@@ -26745,7 +26716,1753 @@ if ("development" !== 'production') {
   // http://fb.me/prop-types-in-prod
   module.exports = require('./factoryWithThrowingShims')();
 }
-},{"react-is":"node_modules/react-is/index.js","./factoryWithTypeCheckers":"node_modules/prop-types/factoryWithTypeCheckers.js"}],"node_modules/classnames/index.js":[function(require,module,exports) {
+},{"react-is":"node_modules/react-is/index.js","./factoryWithTypeCheckers":"node_modules/prop-types/factoryWithTypeCheckers.js"}],"node_modules/invariant/browser.js":[function(require,module,exports) {
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+'use strict';
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var invariant = function (condition, format, a, b, c, d, e, f) {
+  if ("development" !== 'production') {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  }
+
+  if (!condition) {
+    var error;
+
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+
+    throw error;
+  }
+};
+
+module.exports = invariant;
+},{}],"node_modules/gud/index.js":[function(require,module,exports) {
+var global = arguments[3];
+'use strict';
+
+var key = '__global_unique_id__';
+
+module.exports = function () {
+  return global[key] = (global[key] || 0) + 1;
+};
+},{}],"node_modules/fbjs/lib/emptyFunction.js":[function(require,module,exports) {
+"use strict";
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+module.exports = emptyFunction;
+},{}],"node_modules/fbjs/lib/warning.js":[function(require,module,exports) {
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+'use strict';
+
+var emptyFunction = require('./emptyFunction');
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+
+var warning = emptyFunction;
+
+if ("development" !== 'production') {
+  var printWarning = function printWarning(format) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function warning(condition, format) {
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (format.indexOf('Failed Composite propType: ') === 0) {
+      return; // Ignore CompositeComponent proptype check.
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(undefined, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+},{"./emptyFunction":"node_modules/fbjs/lib/emptyFunction.js"}],"node_modules/create-react-context/lib/implementation.js":[function(require,module,exports) {
+'use strict';
+
+exports.__esModule = true;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _gud = require('gud');
+
+var _gud2 = _interopRequireDefault(_gud);
+
+var _warning = require('fbjs/lib/warning');
+
+var _warning2 = _interopRequireDefault(_warning);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var MAX_SIGNED_31_BIT_INT = 1073741823; // Inlined Object.is polyfill.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+
+function objectIs(x, y) {
+  if (x === y) {
+    return x !== 0 || 1 / x === 1 / y;
+  } else {
+    return x !== x && y !== y;
+  }
+}
+
+function createEventEmitter(value) {
+  var handlers = [];
+  return {
+    on: function on(handler) {
+      handlers.push(handler);
+    },
+    off: function off(handler) {
+      handlers = handlers.filter(function (h) {
+        return h !== handler;
+      });
+    },
+    get: function get() {
+      return value;
+    },
+    set: function set(newValue, changedBits) {
+      value = newValue;
+      handlers.forEach(function (handler) {
+        return handler(value, changedBits);
+      });
+    }
+  };
+}
+
+function onlyChild(children) {
+  return Array.isArray(children) ? children[0] : children;
+}
+
+function createReactContext(defaultValue, calculateChangedBits) {
+  var _Provider$childContex, _Consumer$contextType;
+
+  var contextProp = '__create-react-context-' + (0, _gud2.default)() + '__';
+
+  var Provider = function (_Component) {
+    _inherits(Provider, _Component);
+
+    function Provider() {
+      var _temp, _this, _ret;
+
+      _classCallCheck(this, Provider);
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return _ret = (_temp = (_this = _possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args))), _this), _this.emitter = createEventEmitter(_this.props.value), _temp), _possibleConstructorReturn(_this, _ret);
+    }
+
+    Provider.prototype.getChildContext = function getChildContext() {
+      var _ref;
+
+      return _ref = {}, _ref[contextProp] = this.emitter, _ref;
+    };
+
+    Provider.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+      if (this.props.value !== nextProps.value) {
+        var oldValue = this.props.value;
+        var newValue = nextProps.value;
+        var changedBits = void 0;
+
+        if (objectIs(oldValue, newValue)) {
+          changedBits = 0; // No change
+        } else {
+          changedBits = typeof calculateChangedBits === 'function' ? calculateChangedBits(oldValue, newValue) : MAX_SIGNED_31_BIT_INT;
+
+          if ("development" !== 'production') {
+            (0, _warning2.default)((changedBits & MAX_SIGNED_31_BIT_INT) === changedBits, 'calculateChangedBits: Expected the return value to be a ' + '31-bit integer. Instead received: %s', changedBits);
+          }
+
+          changedBits |= 0;
+
+          if (changedBits !== 0) {
+            this.emitter.set(nextProps.value, changedBits);
+          }
+        }
+      }
+    };
+
+    Provider.prototype.render = function render() {
+      return this.props.children;
+    };
+
+    return Provider;
+  }(_react.Component);
+
+  Provider.childContextTypes = (_Provider$childContex = {}, _Provider$childContex[contextProp] = _propTypes2.default.object.isRequired, _Provider$childContex);
+
+  var Consumer = function (_Component2) {
+    _inherits(Consumer, _Component2);
+
+    function Consumer() {
+      var _temp2, _this2, _ret2;
+
+      _classCallCheck(this, Consumer);
+
+      for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      return _ret2 = (_temp2 = (_this2 = _possibleConstructorReturn(this, _Component2.call.apply(_Component2, [this].concat(args))), _this2), _this2.state = {
+        value: _this2.getValue()
+      }, _this2.onUpdate = function (newValue, changedBits) {
+        var observedBits = _this2.observedBits | 0;
+
+        if ((observedBits & changedBits) !== 0) {
+          _this2.setState({
+            value: _this2.getValue()
+          });
+        }
+      }, _temp2), _possibleConstructorReturn(_this2, _ret2);
+    }
+
+    Consumer.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+      var observedBits = nextProps.observedBits;
+      this.observedBits = observedBits === undefined || observedBits === null ? MAX_SIGNED_31_BIT_INT // Subscribe to all changes by default
+      : observedBits;
+    };
+
+    Consumer.prototype.componentDidMount = function componentDidMount() {
+      if (this.context[contextProp]) {
+        this.context[contextProp].on(this.onUpdate);
+      }
+
+      var observedBits = this.props.observedBits;
+      this.observedBits = observedBits === undefined || observedBits === null ? MAX_SIGNED_31_BIT_INT // Subscribe to all changes by default
+      : observedBits;
+    };
+
+    Consumer.prototype.componentWillUnmount = function componentWillUnmount() {
+      if (this.context[contextProp]) {
+        this.context[contextProp].off(this.onUpdate);
+      }
+    };
+
+    Consumer.prototype.getValue = function getValue() {
+      if (this.context[contextProp]) {
+        return this.context[contextProp].get();
+      } else {
+        return defaultValue;
+      }
+    };
+
+    Consumer.prototype.render = function render() {
+      return onlyChild(this.props.children)(this.state.value);
+    };
+
+    return Consumer;
+  }(_react.Component);
+
+  Consumer.contextTypes = (_Consumer$contextType = {}, _Consumer$contextType[contextProp] = _propTypes2.default.object, _Consumer$contextType);
+  return {
+    Provider: Provider,
+    Consumer: Consumer
+  };
+}
+
+exports.default = createReactContext;
+module.exports = exports['default'];
+},{"react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","gud":"node_modules/gud/index.js","fbjs/lib/warning":"node_modules/fbjs/lib/warning.js"}],"node_modules/create-react-context/lib/index.js":[function(require,module,exports) {
+'use strict';
+
+exports.__esModule = true;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _implementation = require('./implementation');
+
+var _implementation2 = _interopRequireDefault(_implementation);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createContext || _implementation2.default;
+module.exports = exports['default'];
+},{"react":"node_modules/react/index.js","./implementation":"node_modules/create-react-context/lib/implementation.js"}],"node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.polyfill = polyfill;
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+function componentWillMount() {
+  // Call this.constructor.gDSFP to support sub-classes.
+  var state = this.constructor.getDerivedStateFromProps(this.props, this.state);
+
+  if (state !== null && state !== undefined) {
+    this.setState(state);
+  }
+}
+
+function componentWillReceiveProps(nextProps) {
+  // Call this.constructor.gDSFP to support sub-classes.
+  // Use the setState() updater to ensure state isn't stale in certain edge cases.
+  function updater(prevState) {
+    var state = this.constructor.getDerivedStateFromProps(nextProps, prevState);
+    return state !== null && state !== undefined ? state : null;
+  } // Binding "this" is important for shallow renderer support.
+
+
+  this.setState(updater.bind(this));
+}
+
+function componentWillUpdate(nextProps, nextState) {
+  try {
+    var prevProps = this.props;
+    var prevState = this.state;
+    this.props = nextProps;
+    this.state = nextState;
+    this.__reactInternalSnapshotFlag = true;
+    this.__reactInternalSnapshot = this.getSnapshotBeforeUpdate(prevProps, prevState);
+  } finally {
+    this.props = prevProps;
+    this.state = prevState;
+  }
+} // React may warn about cWM/cWRP/cWU methods being deprecated.
+// Add a flag to suppress these warnings for this special case.
+
+
+componentWillMount.__suppressDeprecationWarning = true;
+componentWillReceiveProps.__suppressDeprecationWarning = true;
+componentWillUpdate.__suppressDeprecationWarning = true;
+
+function polyfill(Component) {
+  var prototype = Component.prototype;
+
+  if (!prototype || !prototype.isReactComponent) {
+    throw new Error('Can only polyfill class components');
+  }
+
+  if (typeof Component.getDerivedStateFromProps !== 'function' && typeof prototype.getSnapshotBeforeUpdate !== 'function') {
+    return Component;
+  } // If new component APIs are defined, "unsafe" lifecycles won't be called.
+  // Error if any of these lifecycles are present,
+  // Because they would work differently between older and newer (16.3+) versions of React.
+
+
+  var foundWillMountName = null;
+  var foundWillReceivePropsName = null;
+  var foundWillUpdateName = null;
+
+  if (typeof prototype.componentWillMount === 'function') {
+    foundWillMountName = 'componentWillMount';
+  } else if (typeof prototype.UNSAFE_componentWillMount === 'function') {
+    foundWillMountName = 'UNSAFE_componentWillMount';
+  }
+
+  if (typeof prototype.componentWillReceiveProps === 'function') {
+    foundWillReceivePropsName = 'componentWillReceiveProps';
+  } else if (typeof prototype.UNSAFE_componentWillReceiveProps === 'function') {
+    foundWillReceivePropsName = 'UNSAFE_componentWillReceiveProps';
+  }
+
+  if (typeof prototype.componentWillUpdate === 'function') {
+    foundWillUpdateName = 'componentWillUpdate';
+  } else if (typeof prototype.UNSAFE_componentWillUpdate === 'function') {
+    foundWillUpdateName = 'UNSAFE_componentWillUpdate';
+  }
+
+  if (foundWillMountName !== null || foundWillReceivePropsName !== null || foundWillUpdateName !== null) {
+    var componentName = Component.displayName || Component.name;
+    var newApiName = typeof Component.getDerivedStateFromProps === 'function' ? 'getDerivedStateFromProps()' : 'getSnapshotBeforeUpdate()';
+    throw Error('Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n' + componentName + ' uses ' + newApiName + ' but also contains the following legacy lifecycles:' + (foundWillMountName !== null ? '\n  ' + foundWillMountName : '') + (foundWillReceivePropsName !== null ? '\n  ' + foundWillReceivePropsName : '') + (foundWillUpdateName !== null ? '\n  ' + foundWillUpdateName : '') + '\n\nThe above lifecycles should be removed. Learn more about this warning here:\n' + 'https://fb.me/react-async-component-lifecycle-hooks');
+  } // React <= 16.2 does not support static getDerivedStateFromProps.
+  // As a workaround, use cWM and cWRP to invoke the new static lifecycle.
+  // Newer versions of React will ignore these lifecycles if gDSFP exists.
+
+
+  if (typeof Component.getDerivedStateFromProps === 'function') {
+    prototype.componentWillMount = componentWillMount;
+    prototype.componentWillReceiveProps = componentWillReceiveProps;
+  } // React <= 16.2 does not support getSnapshotBeforeUpdate.
+  // As a workaround, use cWU to invoke the new lifecycle.
+  // Newer versions of React will ignore that lifecycle if gSBU exists.
+
+
+  if (typeof prototype.getSnapshotBeforeUpdate === 'function') {
+    if (typeof prototype.componentDidUpdate !== 'function') {
+      throw new Error('Cannot polyfill getSnapshotBeforeUpdate() for components that do not define componentDidUpdate() on the prototype');
+    }
+
+    prototype.componentWillUpdate = componentWillUpdate;
+    var componentDidUpdate = prototype.componentDidUpdate;
+
+    prototype.componentDidUpdate = function componentDidUpdatePolyfill(prevProps, prevState, maybeSnapshot) {
+      // 16.3+ will not execute our will-update method;
+      // It will pass a snapshot value to did-update though.
+      // Older versions will require our polyfilled will-update value.
+      // We need to handle both cases, but can't just check for the presence of "maybeSnapshot",
+      // Because for <= 15.x versions this might be a "prevContext" object.
+      // We also can't just check "__reactInternalSnapshot",
+      // Because get-snapshot might return a falsy value.
+      // So check for the explicit __reactInternalSnapshotFlag flag to determine behavior.
+      var snapshot = this.__reactInternalSnapshotFlag ? this.__reactInternalSnapshot : maybeSnapshot;
+      componentDidUpdate.call(this, prevProps, prevState, snapshot);
+    };
+  }
+
+  return Component;
+}
+},{}],"node_modules/@reach/router/es/lib/utils.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.validateRedirect = exports.insertParams = exports.resolve = exports.match = exports.pick = exports.startsWith = void 0;
+
+var _invariant = _interopRequireDefault(require("invariant"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+////////////////////////////////////////////////////////////////////////////////
+// startsWith(string, search) - Check if `string` starts with `search`
+var startsWith = function startsWith(string, search) {
+  return string.substr(0, search.length) === search;
+}; ////////////////////////////////////////////////////////////////////////////////
+// pick(routes, uri)
+//
+// Ranks and picks the best route to match. Each segment gets the highest
+// amount of points, then the type of segment gets an additional amount of
+// points where
+//
+//     static > dynamic > splat > root
+//
+// This way we don't have to worry about the order of our routes, let the
+// computers do it.
+//
+// A route looks like this
+//
+//     { path, default, value }
+//
+// And a returned match looks like:
+//
+//     { route, params, uri }
+//
+// I know, I should use TypeScript not comments for these types.
+
+
+exports.startsWith = startsWith;
+
+var pick = function pick(routes, uri) {
+  var match = void 0;
+  var default_ = void 0;
+
+  var _uri$split = uri.split("?"),
+      uriPathname = _uri$split[0];
+
+  var uriSegments = segmentize(uriPathname);
+  var isRootUri = uriSegments[0] === "";
+  var ranked = rankRoutes(routes);
+
+  for (var i = 0, l = ranked.length; i < l; i++) {
+    var missed = false;
+    var route = ranked[i].route;
+
+    if (route.default) {
+      default_ = {
+        route: route,
+        params: {},
+        uri: uri
+      };
+      continue;
+    }
+
+    var routeSegments = segmentize(route.path);
+    var params = {};
+    var max = Math.max(uriSegments.length, routeSegments.length);
+    var index = 0;
+
+    for (; index < max; index++) {
+      var routeSegment = routeSegments[index];
+      var uriSegment = uriSegments[index];
+
+      var _isSplat = routeSegment === "*";
+
+      if (_isSplat) {
+        // Hit a splat, just grab the rest, and return a match
+        // uri:   /files/documents/work
+        // route: /files/*
+        params["*"] = uriSegments.slice(index).map(decodeURIComponent).join("/");
+        break;
+      }
+
+      if (uriSegment === undefined) {
+        // URI is shorter than the route, no match
+        // uri:   /users
+        // route: /users/:userId
+        missed = true;
+        break;
+      }
+
+      var dynamicMatch = paramRe.exec(routeSegment);
+
+      if (dynamicMatch && !isRootUri) {
+        var matchIsNotReserved = reservedNames.indexOf(dynamicMatch[1]) === -1;
+        !matchIsNotReserved ? "development" !== "production" ? (0, _invariant.default)(false, "<Router> dynamic segment \"" + dynamicMatch[1] + "\" is a reserved name. Please use a different name in path \"" + route.path + "\".") : (0, _invariant.default)(false) : void 0;
+        var value = decodeURIComponent(uriSegment);
+        params[dynamicMatch[1]] = value;
+      } else if (routeSegment !== uriSegment) {
+        // Current segments don't match, not dynamic, not splat, so no match
+        // uri:   /users/123/settings
+        // route: /users/:id/profile
+        missed = true;
+        break;
+      }
+    }
+
+    if (!missed) {
+      match = {
+        route: route,
+        params: params,
+        uri: "/" + uriSegments.slice(0, index).join("/")
+      };
+      break;
+    }
+  }
+
+  return match || default_ || null;
+}; ////////////////////////////////////////////////////////////////////////////////
+// match(path, uri) - Matches just one path to a uri, also lol
+
+
+exports.pick = pick;
+
+var match = function match(path, uri) {
+  return pick([{
+    path: path
+  }], uri);
+}; ////////////////////////////////////////////////////////////////////////////////
+// resolve(to, basepath)
+//
+// Resolves URIs as though every path is a directory, no files.  Relative URIs
+// in the browser can feel awkward because not only can you be "in a directory"
+// you can be "at a file", too. For example
+//
+//     browserSpecResolve('foo', '/bar/') => /bar/foo
+//     browserSpecResolve('foo', '/bar') => /foo
+//
+// But on the command line of a file system, it's not as complicated, you can't
+// `cd` from a file, only directories.  This way, links have to know less about
+// their current path. To go deeper you can do this:
+//
+//     <Link to="deeper"/>
+//     // instead of
+//     <Link to=`{${props.uri}/deeper}`/>
+//
+// Just like `cd`, if you want to go deeper from the command line, you do this:
+//
+//     cd deeper
+//     # not
+//     cd $(pwd)/deeper
+//
+// By treating every path as a directory, linking to relative paths should
+// require less contextual information and (fingers crossed) be more intuitive.
+
+
+exports.match = match;
+
+var resolve = function resolve(to, base) {
+  // /foo/bar, /baz/qux => /foo/bar
+  if (startsWith(to, "/")) {
+    return to;
+  }
+
+  var _to$split = to.split("?"),
+      toPathname = _to$split[0],
+      toQuery = _to$split[1];
+
+  var _base$split = base.split("?"),
+      basePathname = _base$split[0];
+
+  var toSegments = segmentize(toPathname);
+  var baseSegments = segmentize(basePathname); // ?a=b, /users?b=c => /users?a=b
+
+  if (toSegments[0] === "") {
+    return addQuery(basePathname, toQuery);
+  } // profile, /users/789 => /users/789/profile
+
+
+  if (!startsWith(toSegments[0], ".")) {
+    var pathname = baseSegments.concat(toSegments).join("/");
+    return addQuery((basePathname === "/" ? "" : "/") + pathname, toQuery);
+  } // ./         /users/123  =>  /users/123
+  // ../        /users/123  =>  /users
+  // ../..      /users/123  =>  /
+  // ../../one  /a/b/c/d    =>  /a/b/one
+  // .././one   /a/b/c/d    =>  /a/b/c/one
+
+
+  var allSegments = baseSegments.concat(toSegments);
+  var segments = [];
+
+  for (var i = 0, l = allSegments.length; i < l; i++) {
+    var segment = allSegments[i];
+    if (segment === "..") segments.pop();else if (segment !== ".") segments.push(segment);
+  }
+
+  return addQuery("/" + segments.join("/"), toQuery);
+}; ////////////////////////////////////////////////////////////////////////////////
+// insertParams(path, params)
+
+
+exports.resolve = resolve;
+
+var insertParams = function insertParams(path, params) {
+  var segments = segmentize(path);
+  return "/" + segments.map(function (segment) {
+    var match = paramRe.exec(segment);
+    return match ? params[match[1]] : segment;
+  }).join("/");
+};
+
+exports.insertParams = insertParams;
+
+var validateRedirect = function validateRedirect(from, to) {
+  var filter = function filter(segment) {
+    return isDynamic(segment);
+  };
+
+  var fromString = segmentize(from).filter(filter).sort().join("/");
+  var toString = segmentize(to).filter(filter).sort().join("/");
+  return fromString === toString;
+}; ////////////////////////////////////////////////////////////////////////////////
+// Junk
+
+
+exports.validateRedirect = validateRedirect;
+var paramRe = /^:(.+)/;
+var SEGMENT_POINTS = 4;
+var STATIC_POINTS = 3;
+var DYNAMIC_POINTS = 2;
+var SPLAT_PENALTY = 1;
+var ROOT_POINTS = 1;
+
+var isRootSegment = function isRootSegment(segment) {
+  return segment === "";
+};
+
+var isDynamic = function isDynamic(segment) {
+  return paramRe.test(segment);
+};
+
+var isSplat = function isSplat(segment) {
+  return segment === "*";
+};
+
+var rankRoute = function rankRoute(route, index) {
+  var score = route.default ? 0 : segmentize(route.path).reduce(function (score, segment) {
+    score += SEGMENT_POINTS;
+    if (isRootSegment(segment)) score += ROOT_POINTS;else if (isDynamic(segment)) score += DYNAMIC_POINTS;else if (isSplat(segment)) score -= SEGMENT_POINTS + SPLAT_PENALTY;else score += STATIC_POINTS;
+    return score;
+  }, 0);
+  return {
+    route: route,
+    score: score,
+    index: index
+  };
+};
+
+var rankRoutes = function rankRoutes(routes) {
+  return routes.map(rankRoute).sort(function (a, b) {
+    return a.score < b.score ? 1 : a.score > b.score ? -1 : a.index - b.index;
+  });
+};
+
+var segmentize = function segmentize(uri) {
+  return uri // strip starting/ending slashes
+  .replace(/(^\/+|\/+$)/g, "").split("/");
+};
+
+var addQuery = function addQuery(pathname, query) {
+  return pathname + (query ? "?" + query : "");
+};
+
+var reservedNames = ["uri", "path"]; ////////////////////////////////////////////////////////////////////////////////
+},{"invariant":"node_modules/invariant/browser.js"}],"node_modules/@reach/router/es/lib/history.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createMemorySource = exports.createHistory = exports.navigate = exports.globalHistory = void 0;
+
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+var getLocation = function getLocation(source) {
+  return _extends({}, source.location, {
+    state: source.history.state,
+    key: source.history.state && source.history.state.key || "initial"
+  });
+};
+
+var createHistory = function createHistory(source, options) {
+  var listeners = [];
+  var location = getLocation(source);
+  var transitioning = false;
+
+  var resolveTransition = function resolveTransition() {};
+
+  return {
+    get location() {
+      return location;
+    },
+
+    get transitioning() {
+      return transitioning;
+    },
+
+    _onTransitionComplete: function _onTransitionComplete() {
+      transitioning = false;
+      resolveTransition();
+    },
+    listen: function listen(listener) {
+      listeners.push(listener);
+
+      var popstateListener = function popstateListener() {
+        location = getLocation(source);
+        listener({
+          location: location,
+          action: "POP"
+        });
+      };
+
+      source.addEventListener("popstate", popstateListener);
+      return function () {
+        source.removeEventListener("popstate", popstateListener);
+        listeners = listeners.filter(function (fn) {
+          return fn !== listener;
+        });
+      };
+    },
+    navigate: function navigate(to) {
+      var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+          state = _ref.state,
+          _ref$replace = _ref.replace,
+          replace = _ref$replace === undefined ? false : _ref$replace;
+
+      state = _extends({}, state, {
+        key: Date.now() + ""
+      }); // try...catch iOS Safari limits to 100 pushState calls
+
+      try {
+        if (transitioning || replace) {
+          source.history.replaceState(state, null, to);
+        } else {
+          source.history.pushState(state, null, to);
+        }
+      } catch (e) {
+        source.location[replace ? "replace" : "assign"](to);
+      }
+
+      location = getLocation(source);
+      transitioning = true;
+      var transition = new Promise(function (res) {
+        return resolveTransition = res;
+      });
+      listeners.forEach(function (listener) {
+        return listener({
+          location: location,
+          action: "PUSH"
+        });
+      });
+      return transition;
+    }
+  };
+}; ////////////////////////////////////////////////////////////////////////////////
+// Stores history entries in memory for testing or other platforms like Native
+
+
+exports.createHistory = createHistory;
+
+var createMemorySource = function createMemorySource() {
+  var initialPathname = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "/";
+  var index = 0;
+  var stack = [{
+    pathname: initialPathname,
+    search: ""
+  }];
+  var states = [];
+  return {
+    get location() {
+      return stack[index];
+    },
+
+    addEventListener: function addEventListener(name, fn) {},
+    removeEventListener: function removeEventListener(name, fn) {},
+    history: {
+      get entries() {
+        return stack;
+      },
+
+      get index() {
+        return index;
+      },
+
+      get state() {
+        return states[index];
+      },
+
+      pushState: function pushState(state, _, uri) {
+        var _uri$split = uri.split("?"),
+            pathname = _uri$split[0],
+            _uri$split$ = _uri$split[1],
+            search = _uri$split$ === undefined ? "" : _uri$split$;
+
+        index++;
+        stack.push({
+          pathname: pathname,
+          search: search
+        });
+        states.push(state);
+      },
+      replaceState: function replaceState(state, _, uri) {
+        var _uri$split2 = uri.split("?"),
+            pathname = _uri$split2[0],
+            _uri$split2$ = _uri$split2[1],
+            search = _uri$split2$ === undefined ? "" : _uri$split2$;
+
+        stack[index] = {
+          pathname: pathname,
+          search: search
+        };
+        states[index] = state;
+      }
+    }
+  };
+}; ////////////////////////////////////////////////////////////////////////////////
+// global history - uses window.history as the source if available, otherwise a
+// memory history
+
+
+exports.createMemorySource = createMemorySource;
+var canUseDOM = !!(typeof window !== "undefined" && window.document && window.document.createElement);
+
+var getSource = function getSource() {
+  return canUseDOM ? window : createMemorySource();
+};
+
+var globalHistory = createHistory(getSource());
+exports.globalHistory = globalHistory;
+var navigate = globalHistory.navigate; ////////////////////////////////////////////////////////////////////////////////
+
+exports.navigate = navigate;
+},{}],"node_modules/@reach/router/es/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "globalHistory", {
+  enumerable: true,
+  get: function () {
+    return _history.globalHistory;
+  }
+});
+Object.defineProperty(exports, "navigate", {
+  enumerable: true,
+  get: function () {
+    return _history.navigate;
+  }
+});
+Object.defineProperty(exports, "createHistory", {
+  enumerable: true,
+  get: function () {
+    return _history.createHistory;
+  }
+});
+Object.defineProperty(exports, "createMemorySource", {
+  enumerable: true,
+  get: function () {
+    return _history.createMemorySource;
+  }
+});
+exports.redirectTo = exports.isRedirect = exports.ServerLocation = exports.Router = exports.Redirect = exports.Match = exports.LocationProvider = exports.Location = exports.Link = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _warning = _interopRequireDefault(require("warning"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _invariant = _interopRequireDefault(require("invariant"));
+
+var _createReactContext = _interopRequireDefault(require("create-react-context"));
+
+var _reactLifecyclesCompat = require("react-lifecycles-compat");
+
+var _utils = require("./lib/utils");
+
+var _history = require("./lib/history");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+function _objectWithoutProperties(obj, keys) {
+  var target = {};
+
+  for (var i in obj) {
+    if (keys.indexOf(i) >= 0) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+    target[i] = obj[i];
+  }
+
+  return target;
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+/* eslint-disable jsx-a11y/anchor-has-content */
+
+
+////////////////////////////////////////////////////////////////////////////////
+var createNamedContext = function createNamedContext(name, defaultValue) {
+  var Ctx = (0, _createReactContext.default)(defaultValue);
+  Ctx.Consumer.displayName = name + ".Consumer";
+  Ctx.Provider.displayName = name + ".Provider";
+  return Ctx;
+}; ////////////////////////////////////////////////////////////////////////////////
+// Location Context/Provider
+
+
+var LocationContext = createNamedContext("Location"); // sets up a listener if there isn't one already so apps don't need to be
+// wrapped in some top level provider
+
+var Location = function Location(_ref) {
+  var children = _ref.children;
+  return _react.default.createElement(LocationContext.Consumer, null, function (context) {
+    return context ? children(context) : _react.default.createElement(LocationProvider, null, children);
+  });
+};
+
+exports.Location = Location;
+
+var LocationProvider = function (_React$Component) {
+  _inherits(LocationProvider, _React$Component);
+
+  function LocationProvider() {
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, LocationProvider);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+      context: _this.getContext(),
+      refs: {
+        unlisten: null
+      }
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  LocationProvider.prototype.getContext = function getContext() {
+    var _props$history = this.props.history,
+        navigate = _props$history.navigate,
+        location = _props$history.location;
+    return {
+      navigate: navigate,
+      location: location
+    };
+  };
+
+  LocationProvider.prototype.componentDidCatch = function componentDidCatch(error, info) {
+    if (isRedirect(error)) {
+      var _navigate = this.props.history.navigate;
+
+      _navigate(error.uri, {
+        replace: true
+      });
+    } else {
+      throw error;
+    }
+  };
+
+  LocationProvider.prototype.componentDidUpdate = function componentDidUpdate(prevProps, prevState) {
+    if (prevState.context.location !== this.state.context.location) {
+      this.props.history._onTransitionComplete();
+    }
+  };
+
+  LocationProvider.prototype.componentDidMount = function componentDidMount() {
+    var _this2 = this;
+
+    var refs = this.state.refs,
+        history = this.props.history;
+    refs.unlisten = history.listen(function () {
+      Promise.resolve().then(function () {
+        // TODO: replace rAF with react deferred update API when it's ready https://github.com/facebook/react/issues/13306
+        requestAnimationFrame(function () {
+          if (!_this2.unmounted) {
+            _this2.setState(function () {
+              return {
+                context: _this2.getContext()
+              };
+            });
+          }
+        });
+      });
+    });
+  };
+
+  LocationProvider.prototype.componentWillUnmount = function componentWillUnmount() {
+    var refs = this.state.refs;
+    this.unmounted = true;
+    refs.unlisten();
+  };
+
+  LocationProvider.prototype.render = function render() {
+    var context = this.state.context,
+        children = this.props.children;
+    return _react.default.createElement(LocationContext.Provider, {
+      value: context
+    }, typeof children === "function" ? children(context) : children || null);
+  };
+
+  return LocationProvider;
+}(_react.default.Component); ////////////////////////////////////////////////////////////////////////////////
+
+
+exports.LocationProvider = LocationProvider;
+LocationProvider.defaultProps = {
+  history: _history.globalHistory
+};
+"development" !== "production" ? LocationProvider.propTypes = {
+  history: _propTypes.default.object.isRequired
+} : void 0;
+
+var ServerLocation = function ServerLocation(_ref2) {
+  var url = _ref2.url,
+      children = _ref2.children;
+  return _react.default.createElement(LocationContext.Provider, {
+    value: {
+      location: {
+        pathname: url,
+        search: "",
+        hash: ""
+      },
+      navigate: function navigate() {
+        throw new Error("You can't call navigate on the server.");
+      }
+    }
+  }, children);
+}; ////////////////////////////////////////////////////////////////////////////////
+// Sets baseuri and basepath for nested routers and links
+
+
+exports.ServerLocation = ServerLocation;
+var BaseContext = createNamedContext("Base", {
+  baseuri: "/",
+  basepath: "/"
+}); ////////////////////////////////////////////////////////////////////////////////
+// The main event, welcome to the show everybody.
+
+var Router = function Router(props) {
+  return _react.default.createElement(BaseContext.Consumer, null, function (baseContext) {
+    return _react.default.createElement(Location, null, function (locationContext) {
+      return _react.default.createElement(RouterImpl, _extends({}, baseContext, locationContext, props));
+    });
+  });
+};
+
+exports.Router = Router;
+
+var RouterImpl = function (_React$PureComponent) {
+  _inherits(RouterImpl, _React$PureComponent);
+
+  function RouterImpl() {
+    _classCallCheck(this, RouterImpl);
+
+    return _possibleConstructorReturn(this, _React$PureComponent.apply(this, arguments));
+  }
+
+  RouterImpl.prototype.render = function render() {
+    var _props = this.props,
+        location = _props.location,
+        _navigate2 = _props.navigate,
+        basepath = _props.basepath,
+        primary = _props.primary,
+        children = _props.children,
+        baseuri = _props.baseuri,
+        _props$component = _props.component,
+        component = _props$component === undefined ? "div" : _props$component,
+        domProps = _objectWithoutProperties(_props, ["location", "navigate", "basepath", "primary", "children", "baseuri", "component"]);
+
+    var routes = _react.default.Children.map(children, createRoute(basepath));
+
+    var pathname = location.pathname;
+    var match = (0, _utils.pick)(routes, pathname);
+
+    if (match) {
+      var params = match.params,
+          uri = match.uri,
+          route = match.route,
+          element = match.route.value; // remove the /* from the end for child routes relative paths
+
+      basepath = route.default ? basepath : route.path.replace(/\*$/, "");
+
+      var props = _extends({}, params, {
+        uri: uri,
+        location: location,
+        navigate: function navigate(to, options) {
+          return _navigate2((0, _utils.resolve)(to, uri), options);
+        }
+      });
+
+      var clone = _react.default.cloneElement(element, props, element.props.children ? _react.default.createElement(Router, {
+        primary: primary
+      }, element.props.children) : undefined); // using 'div' for < 16.3 support
+
+
+      var FocusWrapper = primary ? FocusHandler : component; // don't pass any props to 'div'
+
+      var wrapperProps = primary ? _extends({
+        uri: uri,
+        location: location,
+        component: component
+      }, domProps) : domProps;
+      return _react.default.createElement(BaseContext.Provider, {
+        value: {
+          baseuri: uri,
+          basepath: basepath
+        }
+      }, _react.default.createElement(FocusWrapper, wrapperProps, clone));
+    } else {
+      // Not sure if we want this, would require index routes at every level
+      // warning(
+      //   false,
+      //   `<Router basepath="${basepath}">\n\nNothing matched:\n\t${
+      //     location.pathname
+      //   }\n\nPaths checked: \n\t${routes
+      //     .map(route => route.path)
+      //     .join(
+      //       "\n\t"
+      //     )}\n\nTo get rid of this warning, add a default NotFound component as child of Router:
+      //   \n\tlet NotFound = () => <div>Not Found!</div>
+      //   \n\t<Router>\n\t  <NotFound default/>\n\t  {/* ... */}\n\t</Router>`
+      // );
+      return null;
+    }
+  };
+
+  return RouterImpl;
+}(_react.default.PureComponent);
+
+RouterImpl.defaultProps = {
+  primary: true
+};
+var FocusContext = createNamedContext("Focus");
+
+var FocusHandler = function FocusHandler(_ref3) {
+  var uri = _ref3.uri,
+      location = _ref3.location,
+      component = _ref3.component,
+      domProps = _objectWithoutProperties(_ref3, ["uri", "location", "component"]);
+
+  return _react.default.createElement(FocusContext.Consumer, null, function (requestFocus) {
+    return _react.default.createElement(FocusHandlerImpl, _extends({}, domProps, {
+      component: component,
+      requestFocus: requestFocus,
+      uri: uri,
+      location: location
+    }));
+  });
+}; // don't focus on initial render
+
+
+var initialRender = true;
+var focusHandlerCount = 0;
+
+var FocusHandlerImpl = function (_React$Component2) {
+  _inherits(FocusHandlerImpl, _React$Component2);
+
+  function FocusHandlerImpl() {
+    var _temp2, _this4, _ret2;
+
+    _classCallCheck(this, FocusHandlerImpl);
+
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    return _ret2 = (_temp2 = (_this4 = _possibleConstructorReturn(this, _React$Component2.call.apply(_React$Component2, [this].concat(args))), _this4), _this4.state = {}, _this4.requestFocus = function (node) {
+      if (!_this4.state.shouldFocus) {
+        node.focus();
+      }
+    }, _temp2), _possibleConstructorReturn(_this4, _ret2);
+  }
+
+  FocusHandlerImpl.getDerivedStateFromProps = function getDerivedStateFromProps(nextProps, prevState) {
+    var initial = prevState.uri == null;
+
+    if (initial) {
+      return _extends({
+        shouldFocus: true
+      }, nextProps);
+    } else {
+      var myURIChanged = nextProps.uri !== prevState.uri;
+      var navigatedUpToMe = prevState.location.pathname !== nextProps.location.pathname && nextProps.location.pathname === nextProps.uri;
+      return _extends({
+        shouldFocus: myURIChanged || navigatedUpToMe
+      }, nextProps);
+    }
+  };
+
+  FocusHandlerImpl.prototype.componentDidMount = function componentDidMount() {
+    focusHandlerCount++;
+    this.focus();
+  };
+
+  FocusHandlerImpl.prototype.componentWillUnmount = function componentWillUnmount() {
+    focusHandlerCount--;
+
+    if (focusHandlerCount === 0) {
+      initialRender = true;
+    }
+  };
+
+  FocusHandlerImpl.prototype.componentDidUpdate = function componentDidUpdate(prevProps, prevState) {
+    if (prevProps.location !== this.props.location && this.state.shouldFocus) {
+      this.focus();
+    }
+  };
+
+  FocusHandlerImpl.prototype.focus = function focus() {
+    if ("development" === "test") {
+      // getting cannot read property focus of null in the tests
+      // and that bit of global `initialRender` state causes problems
+      // should probably figure it out!
+      return;
+    }
+
+    var requestFocus = this.props.requestFocus;
+
+    if (requestFocus) {
+      requestFocus(this.node);
+    } else {
+      if (initialRender) {
+        initialRender = false;
+      } else {
+        // React polyfills [autofocus] and it fires earlier than cDM,
+        // so we were stealing focus away, this line prevents that.
+        if (!this.node.contains(document.activeElement)) {
+          this.node.focus();
+        }
+      }
+    }
+  };
+
+  FocusHandlerImpl.prototype.render = function render() {
+    var _this5 = this;
+
+    var _props2 = this.props,
+        children = _props2.children,
+        style = _props2.style,
+        requestFocus = _props2.requestFocus,
+        _props2$role = _props2.role,
+        role = _props2$role === undefined ? "group" : _props2$role,
+        _props2$component = _props2.component,
+        Comp = _props2$component === undefined ? "div" : _props2$component,
+        uri = _props2.uri,
+        location = _props2.location,
+        domProps = _objectWithoutProperties(_props2, ["children", "style", "requestFocus", "role", "component", "uri", "location"]);
+
+    return _react.default.createElement(Comp, _extends({
+      style: _extends({
+        outline: "none"
+      }, style),
+      tabIndex: "-1",
+      role: role,
+      ref: function ref(n) {
+        return _this5.node = n;
+      }
+    }, domProps), _react.default.createElement(FocusContext.Provider, {
+      value: this.requestFocus
+    }, this.props.children));
+  };
+
+  return FocusHandlerImpl;
+}(_react.default.Component);
+
+(0, _reactLifecyclesCompat.polyfill)(FocusHandlerImpl);
+
+var k = function k() {}; ////////////////////////////////////////////////////////////////////////////////
+
+
+var forwardRef = _react.default.forwardRef;
+
+if (typeof forwardRef === "undefined") {
+  forwardRef = function forwardRef(C) {
+    return C;
+  };
+}
+
+var Link = forwardRef(function (_ref4, ref) {
+  var innerRef = _ref4.innerRef,
+      props = _objectWithoutProperties(_ref4, ["innerRef"]);
+
+  return _react.default.createElement(BaseContext.Consumer, null, function (_ref5) {
+    var basepath = _ref5.basepath,
+        baseuri = _ref5.baseuri;
+    return _react.default.createElement(Location, null, function (_ref6) {
+      var location = _ref6.location,
+          navigate = _ref6.navigate;
+
+      var to = props.to,
+          state = props.state,
+          replace = props.replace,
+          _props$getProps = props.getProps,
+          getProps = _props$getProps === undefined ? k : _props$getProps,
+          anchorProps = _objectWithoutProperties(props, ["to", "state", "replace", "getProps"]);
+
+      var href = (0, _utils.resolve)(to, baseuri);
+      var isCurrent = location.pathname === href;
+      var isPartiallyCurrent = (0, _utils.startsWith)(location.pathname, href);
+      return _react.default.createElement("a", _extends({
+        ref: ref || innerRef,
+        "aria-current": isCurrent ? "page" : undefined
+      }, anchorProps, getProps({
+        isCurrent: isCurrent,
+        isPartiallyCurrent: isPartiallyCurrent,
+        href: href,
+        location: location
+      }), {
+        href: href,
+        onClick: function onClick(event) {
+          if (anchorProps.onClick) anchorProps.onClick(event);
+
+          if (shouldNavigate(event)) {
+            event.preventDefault();
+            navigate(href, {
+              state: state,
+              replace: replace
+            });
+          }
+        }
+      }));
+    });
+  });
+}); ////////////////////////////////////////////////////////////////////////////////
+
+exports.Link = Link;
+
+function RedirectRequest(uri) {
+  this.uri = uri;
+}
+
+var isRedirect = function isRedirect(o) {
+  return o instanceof RedirectRequest;
+};
+
+exports.isRedirect = isRedirect;
+
+var redirectTo = function redirectTo(to) {
+  throw new RedirectRequest(to);
+};
+
+exports.redirectTo = redirectTo;
+
+var RedirectImpl = function (_React$Component3) {
+  _inherits(RedirectImpl, _React$Component3);
+
+  function RedirectImpl() {
+    _classCallCheck(this, RedirectImpl);
+
+    return _possibleConstructorReturn(this, _React$Component3.apply(this, arguments));
+  } // Support React < 16 with this hook
+
+
+  RedirectImpl.prototype.componentDidMount = function componentDidMount() {
+    var _props3 = this.props,
+        navigate = _props3.navigate,
+        to = _props3.to,
+        from = _props3.from,
+        _props3$replace = _props3.replace,
+        replace = _props3$replace === undefined ? true : _props3$replace,
+        state = _props3.state,
+        noThrow = _props3.noThrow,
+        props = _objectWithoutProperties(_props3, ["navigate", "to", "from", "replace", "state", "noThrow"]);
+
+    Promise.resolve().then(function () {
+      navigate((0, _utils.insertParams)(to, props), {
+        replace: replace,
+        state: state
+      });
+    });
+  };
+
+  RedirectImpl.prototype.render = function render() {
+    var _props4 = this.props,
+        navigate = _props4.navigate,
+        to = _props4.to,
+        from = _props4.from,
+        replace = _props4.replace,
+        state = _props4.state,
+        noThrow = _props4.noThrow,
+        props = _objectWithoutProperties(_props4, ["navigate", "to", "from", "replace", "state", "noThrow"]);
+
+    if (!noThrow) redirectTo((0, _utils.insertParams)(to, props));
+    return null;
+  };
+
+  return RedirectImpl;
+}(_react.default.Component);
+
+var Redirect = function Redirect(props) {
+  return _react.default.createElement(Location, null, function (locationContext) {
+    return _react.default.createElement(RedirectImpl, _extends({}, locationContext, props));
+  });
+};
+
+exports.Redirect = Redirect;
+"development" !== "production" ? Redirect.propTypes = {
+  from: _propTypes.default.string,
+  to: _propTypes.default.string.isRequired
+} : void 0; ////////////////////////////////////////////////////////////////////////////////
+
+var Match = function Match(_ref7) {
+  var path = _ref7.path,
+      children = _ref7.children;
+  return _react.default.createElement(BaseContext.Consumer, null, function (_ref8) {
+    var baseuri = _ref8.baseuri;
+    return _react.default.createElement(Location, null, function (_ref9) {
+      var navigate = _ref9.navigate,
+          location = _ref9.location;
+      var resolvedPath = (0, _utils.resolve)(path, baseuri);
+      var result = (0, _utils.match)(resolvedPath, location.pathname);
+      return children({
+        navigate: navigate,
+        location: location,
+        match: result ? _extends({}, result.params, {
+          uri: result.uri,
+          path: path
+        }) : null
+      });
+    });
+  });
+}; ////////////////////////////////////////////////////////////////////////////////
+// Junk
+
+
+exports.Match = Match;
+
+var stripSlashes = function stripSlashes(str) {
+  return str.replace(/(^\/+|\/+$)/g, "");
+};
+
+var createRoute = function createRoute(basepath) {
+  return function (element) {
+    if (!element) {
+      return null;
+    }
+
+    !(element.props.path || element.props.default || element.type === Redirect) ? "development" !== "production" ? (0, _invariant.default)(false, "<Router>: Children of <Router> must have a `path` or `default` prop, or be a `<Redirect>`. None found on element type `" + element.type + "`") : (0, _invariant.default)(false) : void 0;
+    !!(element.type === Redirect && (!element.props.from || !element.props.to)) ? "development" !== "production" ? (0, _invariant.default)(false, "<Redirect from=\"" + element.props.from + " to=\"" + element.props.to + "\"/> requires both \"from\" and \"to\" props when inside a <Router>.") : (0, _invariant.default)(false) : void 0;
+    !!(element.type === Redirect && !(0, _utils.validateRedirect)(element.props.from, element.props.to)) ? "development" !== "production" ? (0, _invariant.default)(false, "<Redirect from=\"" + element.props.from + " to=\"" + element.props.to + "\"/> has mismatched dynamic segments, ensure both paths have the exact same dynamic segments.") : (0, _invariant.default)(false) : void 0;
+
+    if (element.props.default) {
+      return {
+        value: element,
+        default: true
+      };
+    }
+
+    var elementPath = element.type === Redirect ? element.props.from : element.props.path;
+    var path = elementPath === "/" ? basepath : stripSlashes(basepath) + "/" + stripSlashes(elementPath);
+    return {
+      value: element,
+      default: element.props.default,
+      path: element.props.children ? stripSlashes(path) + "/*" : path
+    };
+  };
+};
+
+var shouldNavigate = function shouldNavigate(event) {
+  return !event.defaultPrevented && event.button === 0 && !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+}; ////////////////////////////////////////////////////////////////////////
+},{"react":"node_modules/react/index.js","warning":"node_modules/warning/browser.js","prop-types":"node_modules/prop-types/index.js","invariant":"node_modules/invariant/browser.js","create-react-context":"node_modules/create-react-context/lib/index.js","react-lifecycles-compat":"node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js","./lib/utils":"node_modules/@reach/router/es/lib/utils.js","./lib/history":"node_modules/@reach/router/es/lib/history.js"}],"node_modules/@babel/runtime/helpers/interopRequireDefault.js":[function(require,module,exports) {
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    "default": obj
+  };
+}
+
+module.exports = _interopRequireDefault;
+},{}],"node_modules/@babel/runtime/helpers/extends.js":[function(require,module,exports) {
+function _extends() {
+  module.exports = _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+module.exports = _extends;
+},{}],"node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+module.exports = _defineProperty;
+},{}],"node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js":[function(require,module,exports) {
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+module.exports = _objectWithoutPropertiesLoose;
+},{}],"node_modules/@babel/runtime/helpers/objectWithoutProperties.js":[function(require,module,exports) {
+var objectWithoutPropertiesLoose = require("./objectWithoutPropertiesLoose");
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+module.exports = _objectWithoutProperties;
+},{"./objectWithoutPropertiesLoose":"node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js"}],"node_modules/classnames/index.js":[function(require,module,exports) {
 var define;
 /*!
   Copyright (c) 2017 Jed Watson.
@@ -27127,7 +28844,7 @@ function _inherits(subClass, superClass) {
 }
 
 module.exports = _inherits;
-},{"./setPrototypeOf":"node_modules/@babel/runtime/helpers/setPrototypeOf.js"}],"node_modules/warning/warning.js":[function(require,module,exports) {
+},{"./setPrototypeOf":"node_modules/@babel/runtime/helpers/setPrototypeOf.js"}],"node_modules/@material-ui/core/node_modules/warning/warning.js":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -27501,62 +29218,6 @@ var SheetsRegistry = function () {
 }();
 
 exports['default'] = SheetsRegistry;
-},{}],"node_modules/jss/node_modules/warning/browser.js":[function(require,module,exports) {
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-'use strict';
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function () {};
-
-if ("development" !== 'production') {
-  warning = function (condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.length < 10 || /^[s\W]*$/.test(format)) {
-      throw new Error('The warning format should be able to uniquely identify this ' + 'warning. Please, use a more descriptive format than: ' + format);
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' + format.replace(/%s/g, function () {
-        return args[argIndex++];
-      });
-
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch (x) {}
-    }
-  };
-}
-
-module.exports = warning;
 },{}],"node_modules/jss/lib/SheetsManager.js":[function(require,module,exports) {
 'use strict';
 
@@ -27668,7 +29329,7 @@ var SheetsManager = function () {
 }();
 
 exports['default'] = SheetsManager;
-},{"warning":"node_modules/jss/node_modules/warning/browser.js"}],"node_modules/jss/lib/utils/toCss.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js"}],"node_modules/jss/lib/utils/toCss.js":[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27953,7 +29614,7 @@ var StyleRule = function () {
 }();
 
 exports['default'] = StyleRule;
-},{"warning":"node_modules/jss/node_modules/warning/browser.js","../utils/toCss":"node_modules/jss/lib/utils/toCss.js","../utils/toCssValue":"node_modules/jss/lib/utils/toCssValue.js"}],"node_modules/symbol-observable/es/ponyfill.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js","../utils/toCss":"node_modules/jss/lib/utils/toCss.js","../utils/toCssValue":"node_modules/jss/lib/utils/toCssValue.js"}],"node_modules/symbol-observable/es/ponyfill.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28135,7 +29796,7 @@ function createRule() {
 
   return new _StyleRule2['default'](name, declCopy, options);
 }
-},{"warning":"node_modules/jss/node_modules/warning/browser.js","../rules/StyleRule":"node_modules/jss/lib/rules/StyleRule.js","../utils/cloneStyle":"node_modules/jss/lib/utils/cloneStyle.js"}],"node_modules/jss/lib/utils/linkRule.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js","../rules/StyleRule":"node_modules/jss/lib/rules/StyleRule.js","../utils/cloneStyle":"node_modules/jss/lib/utils/cloneStyle.js"}],"node_modules/jss/lib/utils/linkRule.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28797,7 +30458,7 @@ exports['default'] = function () {
     return prefix + rule.key + '-' + _moduleId2['default'] + (jssId && '-' + jssId) + '-' + ruleCounter;
   };
 };
-},{"warning":"node_modules/jss/node_modules/warning/browser.js","../StyleSheet":"node_modules/jss/lib/StyleSheet.js","./moduleId":"node_modules/jss/lib/utils/moduleId.js"}],"node_modules/is-in-browser/dist/module.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js","../StyleSheet":"node_modules/jss/lib/StyleSheet.js","./moduleId":"node_modules/jss/lib/utils/moduleId.js"}],"node_modules/is-in-browser/dist/module.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28972,7 +30633,7 @@ var PluginsRegistry = function () {
 }();
 
 exports['default'] = PluginsRegistry;
-},{"warning":"node_modules/jss/node_modules/warning/browser.js"}],"node_modules/jss/lib/rules/SimpleRule.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js"}],"node_modules/jss/lib/rules/SimpleRule.js":[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -30098,7 +31759,7 @@ var DomRenderer = function () {
 }();
 
 exports['default'] = DomRenderer;
-},{"warning":"node_modules/jss/node_modules/warning/browser.js","../sheets":"node_modules/jss/lib/sheets.js","../rules/StyleRule":"node_modules/jss/lib/rules/StyleRule.js","../utils/toCssValue":"node_modules/jss/lib/utils/toCssValue.js"}],"node_modules/jss/lib/renderers/VirtualRenderer.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js","../sheets":"node_modules/jss/lib/sheets.js","../rules/StyleRule":"node_modules/jss/lib/rules/StyleRule.js","../utils/toCssValue":"node_modules/jss/lib/utils/toCssValue.js"}],"node_modules/jss/lib/renderers/VirtualRenderer.js":[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -30751,63 +32412,7 @@ function jssGlobal() {
 
   return { onCreateRule: onCreateRule, onProcessRule: onProcessRule };
 }
-},{"jss":"node_modules/jss/lib/index.js"}],"node_modules/jss-nested/node_modules/warning/browser.js":[function(require,module,exports) {
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-'use strict';
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = function () {};
-
-if ("development" !== 'production') {
-  warning = function (condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.length < 10 || /^[s\W]*$/.test(format)) {
-      throw new Error('The warning format should be able to uniquely identify this ' + 'warning. Please, use a more descriptive format than: ' + format);
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' + format.replace(/%s/g, function () {
-        return args[argIndex++];
-      });
-
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch (x) {}
-    }
-  };
-}
-
-module.exports = warning;
-},{}],"node_modules/jss-nested/lib/index.js":[function(require,module,exports) {
+},{"jss":"node_modules/jss/lib/index.js"}],"node_modules/jss-nested/lib/index.js":[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -30919,7 +32524,7 @@ function jssNested() {
 
   return { onProcessStyle: onProcessStyle };
 }
-},{"warning":"node_modules/jss-nested/node_modules/warning/browser.js"}],"node_modules/hyphenate-style-name/index.js":[function(require,module,exports) {
+},{"warning":"node_modules/warning/browser.js"}],"node_modules/hyphenate-style-name/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -31656,7 +33261,7 @@ function mergeClasses() {
 
 var _default = mergeClasses;
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","warning":"node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js"}],"node_modules/@material-ui/core/styles/multiKeyStore.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js"}],"node_modules/@material-ui/core/styles/multiKeyStore.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -32351,7 +33956,7 @@ function lighten(color, coefficient) {
 
   return recomposeColor(color);
 }
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","warning":"node_modules/warning/warning.js"}],"node_modules/@material-ui/core/styles/createPalette.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js"}],"node_modules/@material-ui/core/styles/createPalette.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -32557,7 +34162,7 @@ function createPalette(palette) {
   });
   return paletteOutput;
 }
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","warning":"node_modules/warning/warning.js","deepmerge":"node_modules/deepmerge/dist/umd.js","../colors/indigo":"node_modules/@material-ui/core/colors/indigo.js","../colors/pink":"node_modules/@material-ui/core/colors/pink.js","../colors/grey":"node_modules/@material-ui/core/colors/grey.js","../colors/red":"node_modules/@material-ui/core/colors/red.js","../colors/common":"node_modules/@material-ui/core/colors/common.js","./colorManipulator":"node_modules/@material-ui/core/styles/colorManipulator.js"}],"node_modules/@material-ui/core/styles/createTypography.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","deepmerge":"node_modules/deepmerge/dist/umd.js","../colors/indigo":"node_modules/@material-ui/core/colors/indigo.js","../colors/pink":"node_modules/@material-ui/core/colors/pink.js","../colors/grey":"node_modules/@material-ui/core/colors/grey.js","../colors/red":"node_modules/@material-ui/core/colors/red.js","../colors/common":"node_modules/@material-ui/core/colors/common.js","./colorManipulator":"node_modules/@material-ui/core/styles/colorManipulator.js"}],"node_modules/@material-ui/core/styles/createTypography.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -32752,7 +34357,7 @@ function createTypography(palette, typography) {
 
   });
 }
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","deepmerge":"node_modules/deepmerge/dist/umd.js","warning":"node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js"}],"node_modules/@material-ui/core/styles/shadows.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","deepmerge":"node_modules/deepmerge/dist/umd.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js"}],"node_modules/@material-ui/core/styles/shadows.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -32902,7 +34507,7 @@ var _default = {
   }
 };
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","warning":"node_modules/warning/warning.js"}],"node_modules/@material-ui/core/styles/zIndex.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js"}],"node_modules/@material-ui/core/styles/zIndex.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -33028,7 +34633,7 @@ function createMuiTheme() {
 
 var _default = createMuiTheme;
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","deepmerge":"node_modules/deepmerge/dist/umd.js","is-plain-object":"node_modules/is-plain-object/index.js","warning":"node_modules/warning/warning.js","./createBreakpoints":"node_modules/@material-ui/core/styles/createBreakpoints.js","./createMixins":"node_modules/@material-ui/core/styles/createMixins.js","./createPalette":"node_modules/@material-ui/core/styles/createPalette.js","./createTypography":"node_modules/@material-ui/core/styles/createTypography.js","./shadows":"node_modules/@material-ui/core/styles/shadows.js","./shape":"node_modules/@material-ui/core/styles/shape.js","./spacing":"node_modules/@material-ui/core/styles/spacing.js","./transitions":"node_modules/@material-ui/core/styles/transitions.js","./zIndex":"node_modules/@material-ui/core/styles/zIndex.js"}],"node_modules/@material-ui/core/styles/themeListener.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","deepmerge":"node_modules/deepmerge/dist/umd.js","is-plain-object":"node_modules/is-plain-object/index.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","./createBreakpoints":"node_modules/@material-ui/core/styles/createBreakpoints.js","./createMixins":"node_modules/@material-ui/core/styles/createMixins.js","./createPalette":"node_modules/@material-ui/core/styles/createPalette.js","./createTypography":"node_modules/@material-ui/core/styles/createTypography.js","./shadows":"node_modules/@material-ui/core/styles/shadows.js","./shape":"node_modules/@material-ui/core/styles/shape.js","./spacing":"node_modules/@material-ui/core/styles/spacing.js","./transitions":"node_modules/@material-ui/core/styles/transitions.js","./zIndex":"node_modules/@material-ui/core/styles/zIndex.js"}],"node_modules/@material-ui/core/styles/themeListener.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -33123,7 +34728,7 @@ function createGenerateClassName() {
     return "".concat(rule.key, "-").concat(seed).concat(ruleCounter);
   };
 }
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","warning":"node_modules/warning/warning.js"}],"node_modules/@material-ui/core/styles/getStylesCreator.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js"}],"node_modules/@material-ui/core/styles/getStylesCreator.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -33178,7 +34783,7 @@ function getStylesCreator(stylesOrCreator) {
 
 var _default = getStylesCreator;
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/typeof":"node_modules/@babel/runtime/helpers/typeof.js","warning":"node_modules/warning/warning.js","deepmerge":"node_modules/deepmerge/dist/umd.js"}],"node_modules/@material-ui/core/styles/getThemeProps.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/typeof":"node_modules/@babel/runtime/helpers/typeof.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","deepmerge":"node_modules/deepmerge/dist/umd.js"}],"node_modules/@material-ui/core/styles/getThemeProps.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -33606,7 +35211,7 @@ var _default = function _default(styles, options) {
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","warning":"node_modules/warning/warning.js","hoist-non-react-statics":"node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","jss":"node_modules/jss/lib/index.js","./reactJssContext":"node_modules/@material-ui/core/styles/reactJssContext.js","./jssPreset":"node_modules/@material-ui/core/styles/jssPreset.js","./mergeClasses":"node_modules/@material-ui/core/styles/mergeClasses.js","./multiKeyStore":"node_modules/@material-ui/core/styles/multiKeyStore.js","./createMuiTheme":"node_modules/@material-ui/core/styles/createMuiTheme.js","./themeListener":"node_modules/@material-ui/core/styles/themeListener.js","./createGenerateClassName":"node_modules/@material-ui/core/styles/createGenerateClassName.js","./getStylesCreator":"node_modules/@material-ui/core/styles/getStylesCreator.js","./getThemeProps":"node_modules/@material-ui/core/styles/getThemeProps.js"}],"node_modules/@material-ui/core/utils/helpers.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","hoist-non-react-statics":"node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","jss":"node_modules/jss/lib/index.js","./reactJssContext":"node_modules/@material-ui/core/styles/reactJssContext.js","./jssPreset":"node_modules/@material-ui/core/styles/jssPreset.js","./mergeClasses":"node_modules/@material-ui/core/styles/mergeClasses.js","./multiKeyStore":"node_modules/@material-ui/core/styles/multiKeyStore.js","./createMuiTheme":"node_modules/@material-ui/core/styles/createMuiTheme.js","./themeListener":"node_modules/@material-ui/core/styles/themeListener.js","./createGenerateClassName":"node_modules/@material-ui/core/styles/createGenerateClassName.js","./getStylesCreator":"node_modules/@material-ui/core/styles/getStylesCreator.js","./getThemeProps":"node_modules/@material-ui/core/styles/getThemeProps.js"}],"node_modules/@material-ui/core/utils/helpers.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -33698,7 +35303,7 @@ function createChainedFunction() {
     };
   }, function () {});
 }
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/typeof":"node_modules/@babel/runtime/helpers/typeof.js","warning":"node_modules/warning/warning.js"}],"node_modules/@material-ui/core/Typography/Typography.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/typeof":"node_modules/@babel/runtime/helpers/typeof.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js"}],"node_modules/@material-ui/core/Typography/Typography.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -34125,7 +35730,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Home = function Home() {
   return _react.default.createElement("main", null, _react.default.createElement(_Typography.default, null, _react.default.createElement("section", {
     style: _style.style.textContainer
-  }, _react.default.createElement("h2", null, " Welcome to Fabricator Djinn"), _react.default.createElement("p", null, "Here you\u2019ll find build logs, videos, and links to everything I build!"), _react.default.createElement("p", null, "Head over to my Shop and pick yourself up something cool aswell!"), _react.default.createElement("p", null, "Good news everyone! After the fun and success of my 3 day build event, I decided to really focus on bringing that kind of content more and more. To that effect, I\u2019ve started a Patreon to help accomplish this! The goal of this one being to bring more and more streamed events and build days to you all, aswell as tips tricks and kickbacks. Click the image below and take a look! There are some pretty cool rewards and goals (.. I think.. anyways.. I may be biased)"))), _react.default.createElement("div", {
+  }, _react.default.createElement("h2", null, " Welcome to Fabricator Djinn"), _react.default.createElement("p", null, "Here you\u2019ll find build logs, videos, and links to everything I build!"), _react.default.createElement("p", null, "Head over to my Shop and pick yourself up something cool aswell!"), _react.default.createElement("p", null, "Good news everyone! After the fun and success of my 3 day build event, I decided to really focus on bringing that kind of content more and more. To that effect, I\u2019ve started a Patreon to help accomplish this! The goal of this one being to bring more and more streamed events and build days to you all, aswell as tips tricks and kickbacks. Click the image below and take a look! There are some pretty cool rewards and goals (I think... anyways... I may be biased)"))), _react.default.createElement("div", {
     style: _style.style.flexContainer
   }, _react.default.createElement("img", {
     src: _PatreonImage.default,
@@ -34431,7 +36036,7 @@ if (!_utils.ponyfillGlobal.__MUI_STYLES__.MuiThemeProvider) {
 
 var _default = _utils.ponyfillGlobal.__MUI_STYLES__.MuiThemeProvider;
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireWildcard":"node_modules/@babel/runtime/helpers/interopRequireWildcard.js","@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","warning":"node_modules/warning/warning.js","brcast":"node_modules/brcast/dist/brcast.es.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","./themeListener":"node_modules/@material-ui/core/styles/themeListener.js"}],"node_modules/@material-ui/core/styles/createStyles.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireWildcard":"node_modules/@babel/runtime/helpers/interopRequireWildcard.js","@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","brcast":"node_modules/brcast/dist/brcast.es.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","./themeListener":"node_modules/@material-ui/core/styles/themeListener.js"}],"node_modules/@material-ui/core/styles/createStyles.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -35678,139 +37283,7 @@ function () {
 
 var _default = ModalManager;
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","dom-helpers/style":"node_modules/dom-helpers/style/index.js","dom-helpers/util/scrollbarSize":"node_modules/dom-helpers/util/scrollbarSize.js","../utils/ownerDocument":"node_modules/@material-ui/core/utils/ownerDocument.js","./isOverflowing":"node_modules/@material-ui/core/Modal/isOverflowing.js","./manageAriaHidden":"node_modules/@material-ui/core/Modal/manageAriaHidden.js"}],"node_modules/react-lifecycles-compat/react-lifecycles-compat.es.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.polyfill = polyfill;
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-function componentWillMount() {
-  // Call this.constructor.gDSFP to support sub-classes.
-  var state = this.constructor.getDerivedStateFromProps(this.props, this.state);
-
-  if (state !== null && state !== undefined) {
-    this.setState(state);
-  }
-}
-
-function componentWillReceiveProps(nextProps) {
-  // Call this.constructor.gDSFP to support sub-classes.
-  // Use the setState() updater to ensure state isn't stale in certain edge cases.
-  function updater(prevState) {
-    var state = this.constructor.getDerivedStateFromProps(nextProps, prevState);
-    return state !== null && state !== undefined ? state : null;
-  } // Binding "this" is important for shallow renderer support.
-
-
-  this.setState(updater.bind(this));
-}
-
-function componentWillUpdate(nextProps, nextState) {
-  try {
-    var prevProps = this.props;
-    var prevState = this.state;
-    this.props = nextProps;
-    this.state = nextState;
-    this.__reactInternalSnapshotFlag = true;
-    this.__reactInternalSnapshot = this.getSnapshotBeforeUpdate(prevProps, prevState);
-  } finally {
-    this.props = prevProps;
-    this.state = prevState;
-  }
-} // React may warn about cWM/cWRP/cWU methods being deprecated.
-// Add a flag to suppress these warnings for this special case.
-
-
-componentWillMount.__suppressDeprecationWarning = true;
-componentWillReceiveProps.__suppressDeprecationWarning = true;
-componentWillUpdate.__suppressDeprecationWarning = true;
-
-function polyfill(Component) {
-  var prototype = Component.prototype;
-
-  if (!prototype || !prototype.isReactComponent) {
-    throw new Error('Can only polyfill class components');
-  }
-
-  if (typeof Component.getDerivedStateFromProps !== 'function' && typeof prototype.getSnapshotBeforeUpdate !== 'function') {
-    return Component;
-  } // If new component APIs are defined, "unsafe" lifecycles won't be called.
-  // Error if any of these lifecycles are present,
-  // Because they would work differently between older and newer (16.3+) versions of React.
-
-
-  var foundWillMountName = null;
-  var foundWillReceivePropsName = null;
-  var foundWillUpdateName = null;
-
-  if (typeof prototype.componentWillMount === 'function') {
-    foundWillMountName = 'componentWillMount';
-  } else if (typeof prototype.UNSAFE_componentWillMount === 'function') {
-    foundWillMountName = 'UNSAFE_componentWillMount';
-  }
-
-  if (typeof prototype.componentWillReceiveProps === 'function') {
-    foundWillReceivePropsName = 'componentWillReceiveProps';
-  } else if (typeof prototype.UNSAFE_componentWillReceiveProps === 'function') {
-    foundWillReceivePropsName = 'UNSAFE_componentWillReceiveProps';
-  }
-
-  if (typeof prototype.componentWillUpdate === 'function') {
-    foundWillUpdateName = 'componentWillUpdate';
-  } else if (typeof prototype.UNSAFE_componentWillUpdate === 'function') {
-    foundWillUpdateName = 'UNSAFE_componentWillUpdate';
-  }
-
-  if (foundWillMountName !== null || foundWillReceivePropsName !== null || foundWillUpdateName !== null) {
-    var componentName = Component.displayName || Component.name;
-    var newApiName = typeof Component.getDerivedStateFromProps === 'function' ? 'getDerivedStateFromProps()' : 'getSnapshotBeforeUpdate()';
-    throw Error('Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n' + componentName + ' uses ' + newApiName + ' but also contains the following legacy lifecycles:' + (foundWillMountName !== null ? '\n  ' + foundWillMountName : '') + (foundWillReceivePropsName !== null ? '\n  ' + foundWillReceivePropsName : '') + (foundWillUpdateName !== null ? '\n  ' + foundWillUpdateName : '') + '\n\nThe above lifecycles should be removed. Learn more about this warning here:\n' + 'https://fb.me/react-async-component-lifecycle-hooks');
-  } // React <= 16.2 does not support static getDerivedStateFromProps.
-  // As a workaround, use cWM and cWRP to invoke the new static lifecycle.
-  // Newer versions of React will ignore these lifecycles if gDSFP exists.
-
-
-  if (typeof Component.getDerivedStateFromProps === 'function') {
-    prototype.componentWillMount = componentWillMount;
-    prototype.componentWillReceiveProps = componentWillReceiveProps;
-  } // React <= 16.2 does not support getSnapshotBeforeUpdate.
-  // As a workaround, use cWU to invoke the new lifecycle.
-  // Newer versions of React will ignore that lifecycle if gSBU exists.
-
-
-  if (typeof prototype.getSnapshotBeforeUpdate === 'function') {
-    if (typeof prototype.componentDidUpdate !== 'function') {
-      throw new Error('Cannot polyfill getSnapshotBeforeUpdate() for components that do not define componentDidUpdate() on the prototype');
-    }
-
-    prototype.componentWillUpdate = componentWillUpdate;
-    var componentDidUpdate = prototype.componentDidUpdate;
-
-    prototype.componentDidUpdate = function componentDidUpdatePolyfill(prevProps, prevState, maybeSnapshot) {
-      // 16.3+ will not execute our will-update method;
-      // It will pass a snapshot value to did-update though.
-      // Older versions will require our polyfilled will-update value.
-      // We need to handle both cases, but can't just check for the presence of "maybeSnapshot",
-      // Because for <= 15.x versions this might be a "prevContext" object.
-      // We also can't just check "__reactInternalSnapshot",
-      // Because get-snapshot might return a falsy value.
-      // So check for the explicit __reactInternalSnapshotFlag flag to determine behavior.
-      var snapshot = this.__reactInternalSnapshotFlag ? this.__reactInternalSnapshot : maybeSnapshot;
-      componentDidUpdate.call(this, prevProps, prevState, snapshot);
-    };
-  }
-
-  return Component;
-}
-},{}],"node_modules/react-transition-group/utils/PropTypes.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","dom-helpers/style":"node_modules/dom-helpers/style/index.js","dom-helpers/util/scrollbarSize":"node_modules/dom-helpers/util/scrollbarSize.js","../utils/ownerDocument":"node_modules/@material-ui/core/utils/ownerDocument.js","./isOverflowing":"node_modules/@material-ui/core/Modal/isOverflowing.js","./manageAriaHidden":"node_modules/@material-ui/core/Modal/manageAriaHidden.js"}],"node_modules/react-transition-group/utils/PropTypes.js":[function(require,module,exports) {
 "use strict";
 
 exports.__esModule = true;
@@ -37389,7 +38862,7 @@ var _default = (0, _withStyles.default)(styles, {
 })(Modal);
 
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/assertThisInitialized":"node_modules/@babel/runtime/helpers/assertThisInitialized.js","react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","prop-types":"node_modules/prop-types/index.js","classnames":"node_modules/classnames/index.js","warning":"node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","../utils/ownerDocument":"node_modules/@material-ui/core/utils/ownerDocument.js","../RootRef":"node_modules/@material-ui/core/RootRef/index.js","../Portal":"node_modules/@material-ui/core/Portal/index.js","../utils/helpers":"node_modules/@material-ui/core/utils/helpers.js","../styles/withStyles":"node_modules/@material-ui/core/styles/withStyles.js","./ModalManager":"node_modules/@material-ui/core/Modal/ModalManager.js","../Backdrop":"node_modules/@material-ui/core/Backdrop/index.js","./manageAriaHidden":"node_modules/@material-ui/core/Modal/manageAriaHidden.js"}],"node_modules/@material-ui/core/Modal/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/assertThisInitialized":"node_modules/@babel/runtime/helpers/assertThisInitialized.js","react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","prop-types":"node_modules/prop-types/index.js","classnames":"node_modules/classnames/index.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","../utils/ownerDocument":"node_modules/@material-ui/core/utils/ownerDocument.js","../RootRef":"node_modules/@material-ui/core/RootRef/index.js","../Portal":"node_modules/@material-ui/core/Portal/index.js","../utils/helpers":"node_modules/@material-ui/core/utils/helpers.js","../styles/withStyles":"node_modules/@material-ui/core/styles/withStyles.js","./ModalManager":"node_modules/@material-ui/core/Modal/ModalManager.js","../Backdrop":"node_modules/@material-ui/core/Backdrop/index.js","./manageAriaHidden":"node_modules/@material-ui/core/Modal/manageAriaHidden.js"}],"node_modules/@material-ui/core/Modal/index.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -37413,7 +38886,71 @@ Object.defineProperty(exports, "ModalManager", {
 var _Modal = _interopRequireDefault(require("./Modal"));
 
 var _ModalManager = _interopRequireDefault(require("./ModalManager"));
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","./Modal":"node_modules/@material-ui/core/Modal/Modal.js","./ModalManager":"node_modules/@material-ui/core/Modal/ModalManager.js"}],"node_modules/react-event-listener/dist/react-event-listener.cjs.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","./Modal":"node_modules/@material-ui/core/Modal/Modal.js","./ModalManager":"node_modules/@material-ui/core/Modal/ModalManager.js"}],"node_modules/react-event-listener/node_modules/warning/warning.js":[function(require,module,exports) {
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+'use strict';
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var __DEV__ = "development" !== 'production';
+
+var warning = function () {};
+
+if (__DEV__) {
+  var printWarning = function printWarning(format, args) {
+    var len = arguments.length;
+    args = new Array(len > 1 ? len - 1 : 0);
+
+    for (var key = 1; key < len; key++) {
+      args[key - 1] = arguments[key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  warning = function (condition, format, args) {
+    var len = arguments.length;
+    args = new Array(len > 2 ? len - 2 : 0);
+
+    for (var key = 2; key < len; key++) {
+      args[key - 2] = arguments[key];
+    }
+
+    if (format === undefined) {
+      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (!condition) {
+      printWarning.apply(null, [format].concat(args));
+    }
+  };
+}
+
+module.exports = warning;
+},{}],"node_modules/react-event-listener/dist/react-event-listener.cjs.js":[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -37609,7 +39146,7 @@ EventListener.propTypes = "development" !== "production" ? {
 } : {};
 exports.withOptions = withOptions;
 exports.default = EventListener;
-},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/typeof":"node_modules/@babel/runtime/helpers/typeof.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","warning":"node_modules/warning/warning.js"}],"node_modules/debounce/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/typeof":"node_modules/@babel/runtime/helpers/typeof.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","warning":"node_modules/react-event-listener/node_modules/warning/warning.js"}],"node_modules/debounce/index.js":[function(require,module,exports) {
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
  * be triggered. The function will be called after it stops being called for
@@ -38135,7 +39672,7 @@ var _default = (0, _withStyles.default)(styles, {
 })(Paper);
 
 exports.default = _default;
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","classnames":"node_modules/classnames/index.js","warning":"node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","../styles/withStyles":"node_modules/@material-ui/core/styles/withStyles.js"}],"node_modules/@material-ui/core/Paper/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/objectWithoutProperties":"node_modules/@babel/runtime/helpers/objectWithoutProperties.js","@babel/runtime/helpers/extends":"node_modules/@babel/runtime/helpers/extends.js","react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","classnames":"node_modules/classnames/index.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","@material-ui/utils":"node_modules/@material-ui/utils/index.es.js","../styles/withStyles":"node_modules/@material-ui/core/styles/withStyles.js"}],"node_modules/@material-ui/core/Paper/index.js":[function(require,module,exports) {
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
@@ -39465,7 +41002,7 @@ function listenForFocusKeys(win) {
   // Also, this logic is client side only, we don't need a teardown.
   win.addEventListener('keyup', handleKeyUpEvent);
 }
-},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","warning":"node_modules/warning/warning.js","../utils/ownerDocument":"node_modules/@material-ui/core/utils/ownerDocument.js"}],"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/interopRequireDefault":"node_modules/@babel/runtime/helpers/interopRequireDefault.js","warning":"node_modules/@material-ui/core/node_modules/warning/warning.js","../utils/ownerDocument":"node_modules/@material-ui/core/utils/ownerDocument.js"}],"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
 function _arrayWithoutHoles(arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
@@ -42354,7 +43891,7 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _propTypes = _interopRequireDefault(require("prop-types"));
+var _router = require("@reach/router");
 
 var _classnames = _interopRequireDefault(require("classnames"));
 
@@ -42496,7 +44033,8 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
     onClick: handleDrawer
   }, _react.default.createElement(_ChevronLeft.default, null))), _react.default.createElement("img", {
     style: {
-      width: '15vw'
+      width: '15vw',
+      alignSelf: 'center'
     },
     src: _DjinnIcon.default,
     alt: "Djinn Logo"
@@ -42504,18 +44042,22 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
     return _react.default.createElement(_ListItem.default, {
       button: true,
       key: text
+    }, _react.default.createElement(_router.Link, {
+      to: "/".concat(text)
     }, _react.default.createElement(_ListItemText.default, {
       primary: text,
       id: text
-    }));
+    })));
   })), _react.default.createElement(_Divider.default, null), _react.default.createElement(_List.default, null, secondaryListDjinn.map(function (text) {
     return _react.default.createElement(_ListItem.default, {
       button: true,
       key: text
+    }, _react.default.createElement(_router.Link, {
+      to: "/".concat(text)
     }, _react.default.createElement(_ListItemText.default, {
       primary: text,
       id: text
-    }));
+    })));
   }))), _react.default.createElement("main", {
     className: (0, _classnames.default)(classes.content, _defineProperty({}, classes.contentShift, open))
   }, _react.default.createElement("div", {
@@ -42523,17 +44065,76 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
   })));
 };
 
-PersistentDrawerLeft.propTypes = {
-  classes: _propTypes.default.object.isRequired,
-  theme: _propTypes.default.object.isRequired
-};
-
 var _default = (0, _styles.withStyles)(styles, {
   withTheme: true
 })(PersistentDrawerLeft);
 
 exports.default = _default;
-},{"react":"node_modules/react/index.js","prop-types":"node_modules/prop-types/index.js","classnames":"node_modules/classnames/index.js","@material-ui/core/styles":"node_modules/@material-ui/core/styles/index.js","@material-ui/core/Drawer":"node_modules/@material-ui/core/Drawer/index.js","@material-ui/core/CssBaseline":"node_modules/@material-ui/core/CssBaseline/index.js","@material-ui/core/AppBar":"node_modules/@material-ui/core/AppBar/index.js","@material-ui/core/Toolbar":"node_modules/@material-ui/core/Toolbar/index.js","@material-ui/core/List":"node_modules/@material-ui/core/List/index.js","@material-ui/core/Typography":"node_modules/@material-ui/core/Typography/index.js","@material-ui/core/Divider":"node_modules/@material-ui/core/Divider/index.js","@material-ui/core/IconButton":"node_modules/@material-ui/core/IconButton/index.js","@material-ui/icons/Menu":"node_modules/@material-ui/icons/Menu.js","@material-ui/icons/ChevronLeft":"node_modules/@material-ui/icons/ChevronLeft.js","@material-ui/core/ListItem":"node_modules/@material-ui/core/ListItem/index.js","@material-ui/core/ListItemText":"node_modules/@material-ui/core/ListItemText/index.js","./style":"components/sidebar/style.js","../../assets/DjinnIcon.png":"assets/DjinnIcon.png"}],"index.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","@reach/router":"node_modules/@reach/router/es/index.js","classnames":"node_modules/classnames/index.js","@material-ui/core/styles":"node_modules/@material-ui/core/styles/index.js","@material-ui/core/Drawer":"node_modules/@material-ui/core/Drawer/index.js","@material-ui/core/CssBaseline":"node_modules/@material-ui/core/CssBaseline/index.js","@material-ui/core/AppBar":"node_modules/@material-ui/core/AppBar/index.js","@material-ui/core/Toolbar":"node_modules/@material-ui/core/Toolbar/index.js","@material-ui/core/List":"node_modules/@material-ui/core/List/index.js","@material-ui/core/Typography":"node_modules/@material-ui/core/Typography/index.js","@material-ui/core/Divider":"node_modules/@material-ui/core/Divider/index.js","@material-ui/core/IconButton":"node_modules/@material-ui/core/IconButton/index.js","@material-ui/icons/Menu":"node_modules/@material-ui/icons/Menu.js","@material-ui/icons/ChevronLeft":"node_modules/@material-ui/icons/ChevronLeft.js","@material-ui/core/ListItem":"node_modules/@material-ui/core/ListItem/index.js","@material-ui/core/ListItemText":"node_modules/@material-ui/core/ListItemText/index.js","./style":"components/sidebar/style.js","../../assets/DjinnIcon.png":"assets/DjinnIcon.png"}],"components/about/style.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.styles = void 0;
+var styles = {
+  flexContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center'
+  },
+  flexItem: {
+    width: '90vw',
+    color: 'white'
+  },
+  imageItems: {
+    width: '30vw'
+  }
+};
+exports.styles = styles;
+},{}],"assets/space-Marine-caleb.jpg":[function(require,module,exports) {
+module.exports = "/space-Marine-caleb.0ed938d9.jpg";
+},{}],"assets/axe-caleb.jpg":[function(require,module,exports) {
+module.exports = "/axe-caleb.c3110435.jpg";
+},{}],"components/about/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _style = require("./style");
+
+var _spaceMarineCaleb = _interopRequireDefault(require("../../assets/space-Marine-caleb.jpg"));
+
+var _axeCaleb = _interopRequireDefault(require("../../assets/axe-caleb.jpg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var About = function About() {
+  return _react.default.createElement("section", {
+    style: _style.styles.flexContainer
+  }, _react.default.createElement("img", {
+    src: _spaceMarineCaleb.default,
+    alt: "Djinn Fabricator Space Marine Costume",
+    style: _style.styles.imageItems
+  }), _react.default.createElement("main", {
+    style: _style.styles.flexItem
+  }, _react.default.createElement("p", null, "My name is Caleb Neal, and I hail from Southern California. I have always enjoyed works of theater and film, to me the glimpse into other worlds they provide is one of life\u2019s great joys. A few years ago I finally tried my hand at building something from one of the many universes created by film, and found I had a passion for it. Now I am trying to get myself out of the office and into the garage, where I can spend my allotted share building entertaining items for awesome people!"), _react.default.createElement("p", null, "Many projects have come and gone since I settled in California, each of them a new and interesting venture, each one an improvement on past works. I wish to try my hand at eventually contributing to the film and theater I love so much \u2013 and in pursuit of that goal I have met many fantastic and talented individuals. The costuming community here is the greatest I have encountered, and I stand honored to be a part of our collective struggles to create. I hope you enjoy the work I post here, and I hope one day to give back to the community that has brought me so much joy. Keep on creating my friends, keep on creating.")), _react.default.createElement("img", {
+    src: _axeCaleb.default,
+    alt: "Djinn Wielding Axe",
+    style: _style.styles.imageItems
+  }));
+};
+
+var _default = About;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","./style":"components/about/style.js","../../assets/space-Marine-caleb.jpg":"assets/space-Marine-caleb.jpg","../../assets/axe-caleb.jpg":"assets/axe-caleb.jpg"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -42545,9 +44146,13 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
 
+var _router = require("@reach/router");
+
 var _home = _interopRequireDefault(require("./components/home"));
 
 var _sidebar = _interopRequireDefault(require("./components/sidebar"));
+
+var _about = _interopRequireDefault(require("./components/about"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42585,12 +44190,16 @@ function (_Component) {
   _createClass(App, [{
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", {
+      return _react.default.createElement("main", {
         style: {
           width: '100vw',
           height: '100vh'
         }
-      }, document.body.style = 'background: #494949;', _react.default.createElement(_sidebar.default, null), _react.default.createElement(_home.default, null));
+      }, document.body.style = 'background: #494949;', _react.default.createElement(_sidebar.default, null), _react.default.createElement(_router.Router, null, _react.default.createElement(_home.default, {
+        path: "/Home"
+      }), _react.default.createElement(_about.default, {
+        path: "/About"
+      })));
     }
   }]);
 
@@ -42600,7 +44209,7 @@ function (_Component) {
 exports.default = App;
 
 _reactDom.default.render(_react.default.createElement(App, null), document.getElementById('root'));
-},{"react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","./components/home":"components/home/index.js","./components/sidebar":"components/sidebar/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","@reach/router":"node_modules/@reach/router/es/index.js","./components/home":"components/home/index.js","./components/sidebar":"components/sidebar/index.js","./components/about":"components/about/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -42628,7 +44237,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49746" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60150" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

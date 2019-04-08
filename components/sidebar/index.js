@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { Link } from '@reach/router';
+
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -112,12 +113,18 @@ const PersistentDrawerLeft = ({ classes }) => {
         <div className={classes.drawerHeader}>
           <IconButton onClick={handleDrawer}>{<ChevronLeftIcon />}</IconButton>
         </div>
-        <img style={{ width: '15vw' }} src={djinnLogo} alt="Djinn Logo" />
+        <img
+          style={{ width: '15vw', alignSelf: 'center' }}
+          src={djinnLogo}
+          alt="Djinn Logo"
+        />
         <Divider />
         <List>
           {primaryListDjinn.map(text => (
             <ListItem button key={text}>
-              <ListItemText primary={text} id={text} />
+              <Link to={`/${text}`}>
+                <ListItemText primary={text} id={text} />
+              </Link>
             </ListItem>
           ))}
         </List>
@@ -125,7 +132,9 @@ const PersistentDrawerLeft = ({ classes }) => {
         <List>
           {secondaryListDjinn.map(text => (
             <ListItem button key={text}>
-              <ListItemText primary={text} id={text} />
+              <Link to={`/${text}`}>
+                <ListItemText primary={text} id={text} />
+              </Link>
             </ListItem>
           ))}
         </List>
@@ -138,11 +147,6 @@ const PersistentDrawerLeft = ({ classes }) => {
       </main>
     </div>
   );
-};
-
-PersistentDrawerLeft.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired
 };
 
 export default withStyles(styles, { withTheme: true })(PersistentDrawerLeft);

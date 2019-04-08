@@ -1,21 +1,26 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Router } from '@reach/router';
 
 import Home from './components/home';
 import Header from './components/sidebar';
+import About from './components/about';
 
 export default class App extends Component {
   render() {
     return (
-      <div
+      <main
         style={{
           width: '100vw',
           height: '100vh'
         }}>
         {(document.body.style = 'background: #494949;')}
         <Header />
-        <Home />
-      </div>
+        <Router>
+          <Home path="/Home" />
+          <About path="/About" />
+        </Router>
+      </main>
     );
   }
 }
