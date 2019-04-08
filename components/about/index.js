@@ -7,6 +7,7 @@ import axeWeilding from '../../assets/axe-caleb.jpg';
 const About = () => {
   return (
     <section style={styles.flexContainer}>
+      <h2 style={styles.flexItem}>About Me</h2>
       <img
         src={spaceMarine}
         alt="Djinn Fabricator Space Marine Costume"

@@ -7,7 +7,7 @@ export const styles = {
     textAlign: 'center'
   },
   flexItem: {
-    width: '90vw',
+    width: '80vw',
     color: 'white'
   },
   imageItems: {

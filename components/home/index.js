@@ -30,7 +30,9 @@ const Home = () => {
         </section>
       </Typography>
       <div style={style.flexContainer}>
-        <img src={logo} alt="Patreon Logo" style={style.logo} />
+        <a href="https://www.patreon.com/fabricatordjinn">
+          <img src={logo} alt="Patreon Logo" style={style.logo} />
+        </a>
       </div>
     </main>
   );

@@ -16,6 +16,7 @@ export const style = {
     color: '#fff',
     flexDirection: 'column',
     position: 'relative',
-    left: '10vw'
+    left: '10vw',
+    top: '10vh'
   }
 };

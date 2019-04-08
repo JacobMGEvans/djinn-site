@@ -121,30 +121,24 @@ const PersistentDrawerLeft = ({ classes }) => {
         <Divider />
         <List>
           {primaryListDjinn.map(text => (
-            <ListItem button key={text}>
-              <Link to={`/${text}`}>
+            <Link to={`/${text}`} onClick={handleDrawer}>
+              <ListItem button key={text} onClick={handleDrawer}>
                 <ListItemText primary={text} id={text} />
-              </Link>
-            </ListItem>
+              </ListItem>
+            </Link>
           ))}
         </List>
         <Divider />
         <List>
           {secondaryListDjinn.map(text => (
-            <ListItem button key={text}>
-              <Link to={`/${text}`}>
+            <Link to={`/${text}`} onClick={handleDrawer}>
+              <ListItem button key={text} onClick={handleDrawer}>
                 <ListItemText primary={text} id={text} />
-              </Link>
-            </ListItem>
+              </ListItem>
+            </Link>
           ))}
         </List>
       </Drawer>
-      <main
-        className={classNames(classes.content, {
-          [classes.contentShift]: open
-        })}>
-        <div className={classes.drawerHeader} />
-      </main>
     </div>
   );
 };

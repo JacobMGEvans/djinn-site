@@ -35705,7 +35705,8 @@ var style = {
     color: '#fff',
     flexDirection: 'column',
     position: 'relative',
-    left: '10vw'
+    left: '10vw',
+    top: '10vh'
   }
 };
 exports.style = style;
@@ -35732,11 +35733,13 @@ var Home = function Home() {
     style: _style.style.textContainer
   }, _react.default.createElement("h2", null, " Welcome to Fabricator Djinn"), _react.default.createElement("p", null, "Here you\u2019ll find build logs, videos, and links to everything I build!"), _react.default.createElement("p", null, "Head over to my Shop and pick yourself up something cool aswell!"), _react.default.createElement("p", null, "Good news everyone! After the fun and success of my 3 day build event, I decided to really focus on bringing that kind of content more and more. To that effect, I\u2019ve started a Patreon to help accomplish this! The goal of this one being to bring more and more streamed events and build days to you all, aswell as tips tricks and kickbacks. Click the image below and take a look! There are some pretty cool rewards and goals (I think... anyways... I may be biased)"))), _react.default.createElement("div", {
     style: _style.style.flexContainer
+  }, _react.default.createElement("a", {
+    href: "https://www.patreon.com/fabricatordjinn"
   }, _react.default.createElement("img", {
     src: _PatreonImage.default,
     alt: "Patreon Logo",
     style: _style.style.logo
-  })));
+  }))));
 };
 
 var _default = Home;
@@ -44039,30 +44042,30 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
     src: _DjinnIcon.default,
     alt: "Djinn Logo"
   }), _react.default.createElement(_Divider.default, null), _react.default.createElement(_List.default, null, primaryListDjinn.map(function (text) {
-    return _react.default.createElement(_ListItem.default, {
+    return _react.default.createElement(_router.Link, {
+      to: "/".concat(text),
+      onClick: handleDrawer
+    }, _react.default.createElement(_ListItem.default, {
       button: true,
-      key: text
-    }, _react.default.createElement(_router.Link, {
-      to: "/".concat(text)
+      key: text,
+      onClick: handleDrawer
     }, _react.default.createElement(_ListItemText.default, {
       primary: text,
       id: text
     })));
   })), _react.default.createElement(_Divider.default, null), _react.default.createElement(_List.default, null, secondaryListDjinn.map(function (text) {
-    return _react.default.createElement(_ListItem.default, {
+    return _react.default.createElement(_router.Link, {
+      to: "/".concat(text),
+      onClick: handleDrawer
+    }, _react.default.createElement(_ListItem.default, {
       button: true,
-      key: text
-    }, _react.default.createElement(_router.Link, {
-      to: "/".concat(text)
+      key: text,
+      onClick: handleDrawer
     }, _react.default.createElement(_ListItemText.default, {
       primary: text,
       id: text
     })));
-  }))), _react.default.createElement("main", {
-    className: (0, _classnames.default)(classes.content, _defineProperty({}, classes.contentShift, open))
-  }, _react.default.createElement("div", {
-    className: classes.drawerHeader
-  })));
+  }))));
 };
 
 var _default = (0, _styles.withStyles)(styles, {
@@ -44086,7 +44089,7 @@ var styles = {
     textAlign: 'center'
   },
   flexItem: {
-    width: '90vw',
+    width: '80vw',
     color: 'white'
   },
   imageItems: {
@@ -44119,7 +44122,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var About = function About() {
   return _react.default.createElement("section", {
     style: _style.styles.flexContainer
-  }, _react.default.createElement("img", {
+  }, _react.default.createElement("h2", {
+    style: _style.styles.flexItem
+  }, "About Me"), _react.default.createElement("img", {
     src: _spaceMarineCaleb.default,
     alt: "Djinn Fabricator Space Marine Costume",
     style: _style.styles.imageItems
@@ -44237,7 +44242,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60150" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55248" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
