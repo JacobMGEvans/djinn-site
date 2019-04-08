@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from '@reach/router';
+import { Router, Redirect } from '@reach/router';
 
 import Home from './components/home';
 import Header from './components/sidebar';
@@ -18,7 +18,8 @@ export default class App extends Component {
         {(document.body.style = 'background: #494949;')}
         <Header />
         <Router>
-          <Home path="/Home" />
+          <Redirect from="Home" to="/" />
+          <Home path="/" />
           <About path="/About" />
           <FAQ path="/FAQ" />
         </Router>
