@@ -4,7 +4,7 @@
     "ecmaVersion": 7
   },
   "plugins": ["babel", "react-hooks"],
-  "extends": ["plugin:prettier/recommended"],
+  "extends": [],
   "env": { "browser": true },
   "settings": {
     "polyfills": ["fetch"]

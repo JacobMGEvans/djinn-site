@@ -44061,7 +44061,8 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
       position: 'relative',
       left: '1.5vw',
       top: '.9vh'
-    }
+    },
+    target: "_blank"
   }, _react.default.createElement(_ListItemText.default, {
     primary: 'Live Build Stream!',
     id: 'Live Build Stream!',
@@ -44091,7 +44092,8 @@ var PersistentDrawerLeft = function PersistentDrawerLeft(_ref) {
       position: 'relative',
       left: '1.5vw',
       top: '1.5vh'
-    }
+    },
+    target: "_blank"
   }, _react.default.createElement(_ListItemText.default, {
     primary: "Shop",
     id: "Shop",
@@ -44280,8 +44282,11 @@ function (_Component) {
           width: '100vw',
           height: '100vh'
         }
-      }, document.body.style = 'background: #494949;', _react.default.createElement(_sidebar.default, null), _react.default.createElement(_router.Router, null, _react.default.createElement(_home.default, {
-        path: "/Home"
+      }, document.body.style = 'background: #494949;', _react.default.createElement(_sidebar.default, null), _react.default.createElement(_router.Router, null, _react.default.createElement(_router.Redirect, {
+        from: "Home",
+        to: "/"
+      }), _react.default.createElement(_home.default, {
+        path: "/"
       }), _react.default.createElement(_about.default, {
         path: "/About"
       }), _react.default.createElement(_faq.default, {
@@ -44324,7 +44329,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55355" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63851" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
